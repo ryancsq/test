@@ -104,7 +104,7 @@ func ParseOddUrl(schedule_odds_url string, schedulefid string, pname string, sch
 	schedule_home_name := convToGB(home_td.Find("ul li a").Text())
 	schedule_guest_name := convToGB(guest_td.Find("ul li a").Text())
 	schedule_game_desc := convToGB(center_td.Find(".odds_hd_center .odds_hd_ls a").Text())
-//	schedule_date := convToGB(center_td.Find(".odds_hd_center .game_time ").Text())
+	//	schedule_date := convToGB(center_td.Find(".odds_hd_center .game_time ").Text())
 
 	schedule_date := schedule_date_orig
 
@@ -194,7 +194,7 @@ func ParseOddUrl(schedule_odds_url string, schedulefid string, pname string, sch
 
 		//		addLastPanLog()
 
-		predict_result, predict_cmt := analysePanResult(open_pan, open_home_water, open_guest_water, real_pan, home_real_water, guest_real_water, home_pan_change_type, schedule_game_desc, schedulefid, cid)
+		predict_result, predict_cmt := AnalysePanResult(open_pan, open_home_water, open_guest_water, real_pan, home_real_water, guest_real_water, home_pan_change_type, schedule_game_desc, schedulefid, cid)
 
 		fmt.Println("float_open_pan")
 		fmt.Println(open_home_water)
@@ -233,7 +233,7 @@ func ParseOddUrl(schedule_odds_url string, schedulefid string, pname string, sch
 				update_lastpan.LastChangeTime = change_time
 				update_lastpan.PredictResult = predict_result
 				update_lastpan.PredictComment = predict_cmt
-				update_affected, update_err := engine.Cols("last_pan", "last_pan_desc", "last_hone_water", "last_guest_water", "last_change_time", "last_home_pan_change_type", "last_home_water_change_type", "predict_result", "predict_comment").Where("schedule_fid=? AND company_cid=? ", schedulefid, cid).Update(update_lastpan)
+				update_affected, update_err := engine.Cols("last_pan", "last_pan_desc", "last_home_water", "last_guest_water", "last_change_time", "last_home_pan_change_type", "last_home_water_change_type", "predict_result", "predict_comment").Where("schedule_fid=? AND company_cid=? ", schedulefid, cid).Update(update_lastpan)
 				fmt.Println(update_affected)
 				fmt.Println(update_err)
 
@@ -341,192 +341,233 @@ func ParseOddUrl(schedule_odds_url string, schedulefid string, pname string, sch
 	return "成功"
 }
 
-func analysePanResult(open_pan float32, open_pan_home_water float32, open_pan_guest_water float32, real_pan float32, real_pan_home_water float32, real_pan_guest_water float32, home_pan_change_type string, schedule_game_desc string, schedulefid string, cid string) (ret string, cmt string) {
+func AnalysePanResult(open_pan float32, open_pan_home_water float32, open_pan_guest_water float32, real_pan float32, real_pan_home_water float32, real_pan_guest_water float32, home_pan_change_type string, schedule_game_desc string, fid string, cid string) (ret string, cmt string) {
 	fmt.Println("+++++++++++")
-	fmt.Println(schedulefid)
-	fmt.Println(home_pan_change_type)
-
+	fmt.Println(fid)
 	switch {
 	case open_pan == 0:
-		fmt.Println("0 open:", open_pan)
-
-		if open_pan == real_pan {
-			if open_pan_home_water <= 0.875 {
-				ret = "3"
-				cmt = "主队水位	≤0.875	主队胜"
-			} else {
-				ret = "1/0"
-				cmt = "主队水位	＞0.875	平或客队胜"
-				if real_pan_home_water < open_pan_home_water {
-					ret = "1/0"
-					cmt = "主队水位	＞0.875	主队即时盘口水位小于初盘水位，多为平局"
-				}
-			}
-
-			if open_pan_home_water == open_pan_guest_water {
-				ret = "1"
-				cmt = "主队水位=	客队水位	平"
-				if real_pan_home_water < 0.875 {
+		if checkPanNotChange(fid, cid, open_pan) == true {
+			if checkWaterNotChange(fid, cid) == true {
+				cmt = "一直保持平手盘（盘口数值为0）盘口、水位一直不变"
+				if real_pan_home_water < real_pan_guest_water {
 					ret = "3"
-					cmt = "主队水位=	客队水位	平，即时水位＜0.875队胜出"
+					cmt += "即时水位相对小的队胜出(主队)"
+				} else if real_pan_home_water > real_pan_guest_water {
+					ret = "0"
+					cmt += "即时水位相对小的队胜出(客队)"
+				} else {
 
+				}
+			} else {
+				cmt = "一直保持平手盘（盘口数值为0）不变，只是水位有涨跌。"
+				if open_pan_home_water < open_pan_guest_water {
+					ret = "3"
+					cmt += "主队水位	＜客队水位	主队胜"
+				} else if open_pan_home_water > open_pan_guest_water {
+					ret = "1/0"
+					cmt += "主队水位	＞客队水位	平或客队胜"
+					if real_pan_home_water < open_pan_home_water {
+						ret = "1/0"
+						cmt += "主队水位	＞客队水位	主队即时盘口水位小于初盘水位，多为平局"
+					}
+				} else {
+					//open_pan_home_water == open_pan_guest_water
+					ret = "1"
+					cmt += "主队水位=	客队水位	平"
+
+					if real_pan_home_water < real_pan_guest_water {
+						ret = "3/" + ret
+						cmt += "即时水位相对小的队胜出(主队)"
+
+					} else if real_pan_home_water > real_pan_guest_water {
+						ret = ret + "/0"
+						cmt += "即时水位相对小的队胜出(客队)"
+					} else {
+
+					}
 				}
 			}
 
-			if checkPanAndWaterNotChange(schedulefid,cid)==true && real_pan_home_water < 0.875 {
-				ret = "3"
-				cmt = "盘口、水位一直不变		即时水位＜0.875队胜出"
-			}
 		} else if home_pan_change_type == "升" {
-			if open_pan_home_water <= 0.875 {
+			cmt = "相对主队出现升盘（平手升平半、平手升半球）初盘盘口=0，即时盘口数值＜0"
+			if open_pan_home_water < open_pan_guest_water {
 				ret = "3"
-				cmt = "主队水位	≤0.875	主队胜"
-			} else {
+				cmt += "主队水位	＜客队水位	主队胜"
+			} else if open_pan_home_water > open_pan_guest_water {
 				ret = "1/0"
-				cmt = "主队水位	＞0.875	平或客队胜  多为平局"
+				cmt += "主队水位	＞客队水位	平或客队胜  多为平局"
 			}
 		} else if home_pan_change_type == "降" {
-			if real_pan_guest_water > 0.875 {
+			cmt = "相对主队出现降盘（初盘盘口=0，即时盘口数值＞0）"
+			if real_pan_guest_water > real_pan_home_water {
 				ret = "3/1"
-				cmt = "客队水位	＞0.875	主队胜或平"
-			} else {
+				cmt += "客队水位	＞主队水位	主队胜或平"
+			} else if real_pan_guest_water < real_pan_home_water {
 				ret = "1/0"
-				cmt = "客队水位	≤0.875	平或客队胜"
+				cmt += "客队水位	＜主队水位	平或客队胜"
 			}
 		}
 
 		fmt.Println("open:", open_pan, ret, cmt)
 	case open_pan == (-0.25):
-		fmt.Println("-0.25 open:", open_pan)
-		if open_pan == real_pan {
-			if open_pan_home_water <= 0.875 {
-				ret = "3"
-				cmt = "主队水位	≤0.875	主队胜"
-			} else {
-				ret = "1/0"
-				cmt = "主队水位	＞0.875	平或客队胜"
-			}
-
-			if open_pan_home_water == open_pan_guest_water && real_pan_home_water > 0.875 {
-				ret = "3"
-				cmt = "主队水位=	客队水位	即时水位＞0.875队胜出	"
-			}
-			if checkPanAndWaterNotChange(schedulefid,cid)==true  {
+		if checkPanNotChange(fid, cid, open_pan) == true {
+			if checkWaterNotChange(fid, cid) == true {
+				cmt = "一直保持平半（盘口数值为-0.25）不变 盘口、水位一直不变"
 				ret = "3/0"
-				cmt = "盘口、水位一直不变		双方能分胜负		德甲主队胜概率大"
-			}
-			if checkPanNotChange(schedulefid,cid)==true && checkIsGermanyJia(schedule_game_desc) == true {
-				ret = "1/0"
-				cmt = "若为德甲，盘口不变而水位发生变化们一般是下盘胜出			对应结果：	1/0	"
+				cmt += "双方能分胜负 德甲主队胜概率大"
+
+			} else {
+				cmt = "一直保持平半（盘口数值为-0.25）不变，只是水位有涨跌。"
+				if checkIsGermanyJia(schedule_game_desc) == true {
+					ret = "1/0"
+					cmt += "为德甲，盘口不变而水位发生变化们一般是下盘胜出"
+				} else {
+					if open_pan_home_water < open_pan_guest_water {
+						ret = "3"
+						cmt += "主队水位	＜客队水位	主队胜"
+					} else if open_pan_home_water > open_pan_guest_water {
+						ret = "1/0"
+						cmt += "主队水位	＞客队水位	平或客队胜"
+					} else {
+						//open_pan_home_water == open_pan_guest_water
+						cmt += "即时水位相对大的队胜出"
+
+						if real_pan_home_water > real_pan_guest_water {
+							ret = "3"
+							cmt += "即时水位相对大的队胜出(主队)"
+
+						} else if real_pan_home_water < real_pan_guest_water {
+							ret = "0"
+							cmt += "即时水位相对大的队胜出(客队)"
+						} else {
+
+						}
+					}
+				}
+
 			}
 		} else if home_pan_change_type == "升" {
-			if open_pan_home_water <= 0.875 {
-				if real_pan_home_water > 0.875 && checkWaterIsDown(schedulefid, cid) {
+			cmt = "相对主队出现升盘（平半升半球或一球）初盘盘口=-0.25，即时盘口数值＜-0.25"
+			if open_pan_home_water < open_pan_guest_water {
+				if real_pan_home_water > real_pan_guest_water && checkWaterIsDown(fid, cid) == true {
 					ret = "3"
-					cmt = "主队水位	≤0.875	即时水位＞0.875并且水位持续下降	主队胜"
-				} else if real_pan_home_water <= 0.875 {
+					cmt += "主队水位	<客队水位	即时水位＞客队水位并且水位持续下降	主队胜"
+				} else if real_pan_home_water < real_pan_guest_water {
 					ret = "1/0"
-					cmt = "主队水位	≤0.875	即时水位≤0.875	平或客队胜"
+					cmt += "主队水位	<客队水位 	即时水位<客队水位	平或客队胜"
 				}
-			} else {
+			} else if open_pan_home_water > open_pan_guest_water {
 				ret = "1/0"
-				cmt = "主队水位	＞0.875		平或客队胜 多为平局"
+				cmt += "主队水位	＞客队水位	平或客队胜 多为平局"
 			}
 		} else if home_pan_change_type == "降" {
-			if open_pan_home_water <= 0.875 {
-				if real_pan_home_water <= 0.875 {
+			cmt = "相对主队出现降盘（初盘盘口=-0.25，即时盘口数值＞-0.25）"
+			if open_pan_home_water < open_pan_guest_water {
+				if real_pan_home_water < real_pan_guest_water {
 					ret = "0"
-					cmt = "主队水位	≤0.875	即时水位≤0.875	客队胜"
-				} else {
+					cmt += "主队水位	<客队水位 	即时水位<客队水位 	客队胜"
+				} else if real_pan_home_water > real_pan_guest_water {
 					ret = "1"
-					cmt = "主队水位	≤0.875	即时水位＞0.875	平"
+					cmt += "主队水位	<客队水位 	即时水位＞客队水位 	平"
 				}
-//			} else {
-//				ret = "1/0"
-//				cmt = "其余情况			平或客队胜	对应结果：	1/0"
 			}
 
 		}
 	case open_pan == (-0.5):
-		if open_pan == real_pan {
-			if open_pan_home_water <= 0.875 {
-				ret = "3"
-				cmt = "主队水位	≤0.875	主队胜	对应结果：	3"
-			} else {
-				ret = "1/0"
-				cmt = "主队水位	＞0.875	平或客队胜	对应结果：	1/0"
-			}
-
-			if checkPanAndWaterNotChange(schedulefid,cid)==true {
-				if open_pan_home_water <= 0.875 {
+		if checkPanNotChange(fid, cid, open_pan) == true {
+			if checkWaterNotChange(fid, cid) == true {
+				cmt = "一直保持半球盘（盘口数值为-0.5）不变 盘口、水位一直不变."
+				if open_pan_home_water < open_pan_guest_water {
 					ret = "1/0"
-					cmt = "盘口、水位一直不变		初盘水位	主队水位	≤0.875	平或客队胜	对应结果：	1/0"
-				} else {
-					ret = "3"
-					cmt = "盘口、水位一直不变		初盘水位	主队水位	＞0.875	主队胜	对应结果：	3"
-				}
-			}
+					cmt += "初盘水位	主队水位	<客队水位	平或客队胜	对应结果：	1/0"
 
-		} else if home_pan_change_type == "升" {
-			if open_pan_home_water <= 0.875 {
-				if real_pan_home_water > 0.875 {
+				} else if open_pan_home_water > open_pan_guest_water {
 					ret = "3"
-					cmt = "主队水位	≤0.875	即时水位＞0.875	主队胜	对应结果：	3"
-				} else {
-					ret = "1"
-					cmt = "主队水位	≤0.875	即时水位≤0.875	平	对应结果：	1"
+					cmt += "初盘水位	主队水位	＞客队水位	主队胜	对应结果：	3"
 				}
 			} else {
+				cmt = "一直保持半球盘（盘口数值为-0.5）不变，只是水位有涨跌。"
+				if open_pan_home_water < open_pan_guest_water {
+					ret = "3"
+					cmt += "主队水位	＜客队水位	主队胜"
+				} else if open_pan_home_water > open_pan_guest_water {
+					ret = "1/0"
+					cmt += "主队水位	＞客队水位	平或客队胜"
+				} else {
+
+				}
+			}
+		} else if home_pan_change_type == "升" {
+			cmt = "相对主队出现升盘（半球升半一或半球升一球）初盘盘口=-0.5，即时盘口数值＜-0.5"
+			if open_pan_home_water < open_pan_guest_water {
+				if real_pan_home_water > real_pan_guest_water {
+					ret = "3"
+					cmt += "主队水位	<客队水位 	即时水位＞客队水位	主队胜	对应结果：	3"
+				} else if real_pan_home_water < real_pan_guest_water {
+					ret = "1"
+					cmt += "主队水位	<客队水位 	即时水位<客队水位	平	对应结果：	1"
+				}
+			} else if open_pan_home_water > open_pan_guest_water {
 				ret = "0"
-				cmt = "主队水位	＞0.875		客队胜	对应结果：	0"
+				cmt += "主队水位	＞客队水位		客队胜	对应结果：	0"
 			}
 		} else if home_pan_change_type == "降" {
-			fmt.Println("-0.5====")
-			fmt.Println(open_pan_home_water)
-			fmt.Println(real_pan_home_water)
-			if open_pan_home_water > 0.875 {
-				if real_pan_home_water <= 0.875 {
+			jiang_flag := false
+			cmt = "相对主队出现降盘（初盘盘口=-0.5，即时盘口数值＞-0.5）"
+			if open_pan_home_water > open_pan_guest_water {
+				if real_pan_home_water < real_pan_guest_water {
 					ret = "3/1"
-					cmt = "主队水位	＞0.875	即时水位≤0.875	主胜或平	对应结果：	3、1"
-				} else {
+					cmt += "主队水位	＞客队水位	即时水位<客队水位	主胜或平	对应结果：	3、1"
+					jiang_flag = true
+				} else if real_pan_home_water > real_pan_guest_water {
 					ret = "0"
-					cmt = "主队水位	＞0.875	即时水位＞0.875	客队胜	对应结果：	0"
+					cmt += "主队水位	＞客队水位	即时水位＞客队水位	客队胜	对应结果：	0"
+					jiang_flag = true
+
 				}
-//			} else {
-//				ret = "1/0"
-//				cmt = "其余情况			平或客队胜	对应结果：	1/0"
+
+			}
+			if jiang_flag == false {
+				ret = "1/0"
+				cmt += "其余情况			平或客队胜	对应结果：	1/0"
 			}
 		}
-		fmt.Println("-0.5 open:", open_pan)
-
 	case open_pan == (-0.75):
-		if open_pan == real_pan {
-			if open_pan_home_water <= 0.875 {
-				ret = "3"
-				cmt = "主队水位	≤0.875	主队胜	对应结果：	3"
-			} else {
-				if real_pan_home_water <= 0.875 {
-					ret = "1/0"
-					cmt = "主队水位	＞0.875	即时水位≤0.875	平或客队胜	对应结果：	1/0"
-				} else {
+		if checkPanNotChange(fid, cid, open_pan) == true {
+			if checkWaterNotChange(fid, cid) == false {
+				cmt = "一直保持半球盘（盘口数值为-0.75）不变，只是水位有涨跌。"
+				if open_pan_home_water < open_pan_guest_water {
 					ret = "3"
-					cmt = "主队水位	＞0.875	即时水位＞0.875	主队胜	对应结果：	3"
-				}
-				if real_pan_home_water == open_pan_home_water {
-					ret = "0"
-					cmt = "主队水位	＞0.875	即时水位=初盘水位	客队胜	对应结果：	0"
+					cmt += "主队水位	＜客队水位	主队胜"
+				} else if open_pan_home_water > open_pan_guest_water {
+					if real_pan_home_water < real_pan_guest_water {
+						ret = "1/0"
+						cmt += "主队水位	＞客队水位 即时水位＜客队水位	平或客队胜"
+					} else if real_pan_home_water > real_pan_guest_water {
+						ret = "3"
+						cmt += "主队水位	＞客队水位 即时水位＜客队水位	主队胜"
+					} else {
+
+					}
+					if real_pan_home_water == open_pan_home_water {
+						ret = "0"
+						cmt += "主队水位	＞客队水位 即时水位=初盘水位	客队胜"
+					}
+
+				} else {
+
 				}
 			}
-
 		} else if home_pan_change_type == "升" {
 		} else if home_pan_change_type == "降" {
-			if open_pan_home_water <= 0.875 {
-				if real_pan_home_water > 0.875 {
+			cmt = "相对主队出现降盘（初盘盘口=-0.75，即时盘口数值＞-0.75）"
+			if open_pan_home_water < open_pan_guest_water {
+				if real_pan_home_water > real_pan_guest_water {
 					ret = "1"
-					cmt = "主队水位	≤0.875	即时水位＞0.875	平	对应结果：	1"
-				} else {
+					cmt += "主队水位	<客队水位	 即时水位＞客队水位	平	对应结果：	1"
+				} else if real_pan_home_water < real_pan_guest_water {
 					ret = "0"
-					cmt = "主队水位	≤0.875	即时水位≤0.875	客队胜	对应结果：	0"
+					cmt += "主队水位	<客队水位		即时水位< 客队水位	客队胜	对应结果：	0"
 				}
 			}
 
@@ -537,36 +578,35 @@ func analysePanResult(open_pan float32, open_pan_home_water float32, open_pan_gu
 		//	case -1.25:
 		//	case -1.5:
 		flag := false
-		if(checkPanNotChange(schedulefid,cid)==true && checkWaterNotChange(schedulefid,cid)==false ){
-			if open_pan_home_water > 0.875 {
+		if checkPanNotChange(fid, cid, open_pan) == true && checkWaterNotChange(fid, cid) == false {
+			if open_pan_home_water > open_pan_guest_water {
 				ret = "3"
-				cmt = "主队水位	＞0.875	主队胜	对应结果：	3"	
-				flag = true		
-			
+				cmt = "一直保持一球或以上（盘口数值为≤-1）不变，只是水位有涨跌。主队水位	＞客队水位	主队胜	对应结果：	3"
+				flag = true
 			}
-		} 
-		if(checkPanNotChange(schedulefid,cid)==false && open_pan==(-1) && real_pan!=(-1)){
-			if open_pan_home_water > 0.875 && real_pan_home_water <= 0.875 {
+		}
+		if checkPanNotChange(fid, cid, open_pan) == false && open_pan <= (-1) && real_pan != open_pan {
+			if open_pan_home_water > open_pan_guest_water && real_pan_home_water <= real_pan_guest_water {
 				ret = "3/1"
-				cmt = "主队水位	＞0.875	即时水位≤0.875"
-				flag = true		
+				cmt = "相对主队盘口变化（初盘盘口≤-1，即时盘口数值≠初盘盘口）.主队水位	＞客队水位	即时水位<客队水位 胜或平"
+				flag = true
 			}
 		}
-		
-		if(open_pan<(-1.5) && checkPanNotChange(schedulefid,cid)==true){
-			if(open_pan_home_water< 0.8){
+
+		if open_pan < (-1.5) && checkPanNotChange(fid, cid, open_pan) == true {
+			if open_pan_home_water < 0.8 {
 				ret = "3/0"
-				cmt = "初盘盘口数值＜-1.5） 初盘水位	主队水位	＜0.8	有爆冷可能	胜或负 "
-				flag = true		
+				cmt += "初盘盘口数值＜-1.5），即时盘口数值不变 初盘水位	主队水位	＜0.8	有爆冷可能	胜或负 "
+				flag = true
 			}
 		}
-		
-		if(flag==false){
-				if open_pan_home_water < 0.875 {
+
+		if flag == false {
+			if open_pan_home_water < open_pan_guest_water {
 				//其他情况
 				ret = "3"
-				cmt = "其余情况 初盘水位	主队水位	＜0.875	主队胜	对应结果：	3"	
-				}		
+				cmt += "其余情况 初盘水位	主队水位	＜客队水位	主队胜	对应结果：	3"
+			}
 		}
 		fmt.Println("-1 open:", open_pan)
 	default:
@@ -584,19 +624,24 @@ func checkIsGermanyJia(str string) (ret bool) {
 
 func checkWaterIsDown(fid string, cid string) (ret bool) {
 	exist_up := new(LastPanLog)
-	total, _ := engine.Where("last_home_water_change_type='up' AND schedule_fid=? AND company_cid=?", fid, cid).Count(exist_up)
+	total, _ := engine.Where("last_home_water_change_type='water_up' AND schedule_fid=? AND company_cid=?", fid, cid).Count(exist_up)
 	if total > 0 {
 		return false
 	}
 	return true
 }
 
-func checkPanNotChange(fid string, cid string) (ret bool) {
+func checkPanNotChange(fid string, cid string, pan_value float32) (ret bool) {
 	exist_up := new(LastPanLog)
-	total_pan_change, _ := engine.Where("open_pan!=last_pan AND schedule_fid=? AND company_cid=?", fid, cid).Count(exist_up)
+	//	if pan_value == 999 {
+	//		total_pan_change, _ := engine.Where("open_pan!=last_pan AND schedule_fid=? AND company_cid=?", fid, cid).Count(exist_up)
+	//	} else {
+	total_pan_change, _ := engine.Where("open_pan!=last_pan AND schedule_fid=? AND company_cid=? AND open_pan=?", fid, cid, pan_value).Count(exist_up)
+	//	}
+
 	if total_pan_change > 0 {
 		return false
-	}	
+	}
 	return true
 }
 
@@ -605,28 +650,25 @@ func checkWaterNotChange(fid string, cid string) (ret bool) {
 	total_water_change, _ := engine.Where("open_home_water!=last_home_water AND schedule_fid=? AND company_cid=?", fid, cid).Count(exist_up)
 	if total_water_change > 0 {
 		return false
-	}	
-	return true
-}
-
-
-func checkPanAndWaterNotChange(fid string, cid string) (ret bool) {
-	if(checkPanNotChange(fid,cid)==false){
-		return false;
 	}
-	if(checkWaterNotChange(fid,cid)==false){
-		return false;
-	}	
 	return true
 }
 
-
+func checkPanAndWaterNotChange(fid string, cid string, pan_value float32) (ret bool) {
+	if checkPanNotChange(fid, cid, pan_value) == false {
+		return false
+	}
+	if checkWaterNotChange(fid, cid) == false {
+		return false
+	}
+	return true
+}
 
 func initDb() {
 	var err error
 	//	engine, err = xorm.NewEngine("mysql", "root:@tcp(localhost:3306)/test_ha")
-//	        engine, err = xorm.NewEngine("mysql", "root:123456@tcp(192.168.1.172:3306)/jc_test")
-	engine, err = xorm.NewEngine("mysql", "qichejingli:qichejingli1234QWER@tcp(rds3bhb1ed059c58i02wo.mysql.rds.aliyuncs.com:3306)/test_ha")
+	//	engine, err = xorm.NewEngine("mysql", "root:123456@tcp(192.168.1.172:3306)/test_ha2")
+	engine, err = xorm.NewEngine("mysql", "qichejingli:qichejingli1234QWER@tcp(rds3bhb1ed059c58i02wo.mysql.rds.aliyuncs.com:3306)/test_ha2")
 
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
@@ -737,4 +779,12 @@ func moveToBackup() {
 	del_res, del_err := engine.Exec(del_sql, today)
 	fmt.Println(del_res, del_err)
 
+	seven_ago_unix := time.Now().Unix() - 86400*7
+
+	t1 := time.Unix(seven_ago_unix, 0)
+	fmt.Println(t1.Format("2006-01-02"))
+
+	del_backup_sql := "delete from `pk_last_pan_backup` where schedule_date<?"
+	del_backup_res, del_backup_err := engine.Exec(del_backup_sql, t1.Format("2006-01-02"))
+	fmt.Println(del_backup_res, del_backup_err)
 }
