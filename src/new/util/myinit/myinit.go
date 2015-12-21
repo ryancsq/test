@@ -3,7 +3,6 @@ package myinit
 import (
 	"fmt"
 	"os"
-	
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
@@ -35,7 +34,7 @@ type LastPan struct {
 	ScheduleGameDesc        string
 	CompanyCid              string
 	CompanyName             string
-	ScheduleFid             string
+	ScheduleFid             int
 	OpenPan                 float32
 	OpenPanDesc             string
 	OpenHomeWater           float32
@@ -47,12 +46,11 @@ type LastPan struct {
 	LastHomeWater           float32
 	LastGuestWater          float32
 	LastChangeTime          string
-	IsBigCompany            string
-	LastHomeWaterChangeType string
+	IsBigCompany            int
+	LastHomeWaterChangeType int
 	PredictResult           string
 	PredictComment          string
 }
-
 
 type LastPanLog struct {
 	LastId                  string
@@ -83,15 +81,21 @@ type LastPanLog struct {
 
 var Engine *xorm.Engine
 
+var IndexUrl = "http://trade.500.com/jczq/"
+var PanUrl = "http://odds.500.com/fenxi/yazhi-TTT.shtml"
+var ResultUrl = "http://zx.500.com/jczq/kaijiang.php?d=DDD"
+
+//var mysql_dsn = "root:@tcp(localhost:3306)/test_ha"
+var mysql_dsn = "root:123456@tcp(192.168.1.172:3306)/test_ha2"
+//var mysql_dsn = "qichejingli:qichejingli1234QWER@tcp(rds3bhb1ed059c58i02wo.mysql.rds.aliyuncs.com:3306)/test_ha2"
+
 func Myinit(){
 	initDb()
 }
 
 func initDb() {
 	var err error
-//		engine, err = xorm.NewEngine("mysql", "root:@tcp(localhost:3306)/test_ha")
-		Engine, err = xorm.NewEngine("mysql", "root:123456@tcp(192.168.1.172:3306)/test_ha2")
-//	engine, err = xorm.NewEngine("mysql", "qichejingli:qichejingli1234QWER@tcp(rds3bhb1ed059c58i02wo.mysql.rds.aliyuncs.com:3306)/test_ha2")
+	Engine, err = xorm.NewEngine("mysql", mysql_dsn)
 
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
@@ -107,7 +111,7 @@ func initDb() {
 
 	f, err := os.Create("sql.log")
 	if err != nil {
-		println("sql.log error:")
+		println("error:")
 		println(err.Error())
 		return
 	}
