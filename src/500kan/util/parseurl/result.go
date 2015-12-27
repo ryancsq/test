@@ -2,9 +2,8 @@ package parseurl
 
 import (
 	"fmt"
-	//	"strconv"
+	"time"
 	"strings"
-	//	"time"
 
 	"500kan/util/asiapan"
 	"500kan/util/asiapanlog"
@@ -17,7 +16,10 @@ import (
 )
 
 func ParseResultUrl(date string, history bool) {
-
+	if date == "" {
+		now := time.Now()
+		date = now.Format("2006-01-02")
+	}
 	result_url := strings.Replace(myinit.ResultUrl, "DDD", date, -1)
 	fmt.Println(result_url)
 	schedule_string_info := make(map[string]string)

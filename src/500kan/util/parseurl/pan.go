@@ -15,7 +15,7 @@ import (
 	"github.com/opesun/goquery"
 )
 
-func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string_info map[string]string, date string) (res string) {
+func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string_info map[string]string, date string) (res bool) {
 	pan_int_info := make(map[string]int)
 	pan_float_info := make(map[string]float32)
 	pan_string_info := make(map[string]string)
@@ -29,7 +29,7 @@ func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string
 
 	pan_int_info["schedule_fenxi_id"] = schedule_fenxi_id
 	pan_string_info["schedule_date"] = schedule_string_info["schedule_date"]
-	pan_string_info["schedule_bet_date"] = date
+	//	pan_string_info["schedule_bet_date"] = date
 
 	pan_string_info["schedule_no"] = schedule_string_info["schedule_no"]
 	pan_string_info["schedule_result_no"] = schedule_string_info["schedule_result_no"]
@@ -136,7 +136,8 @@ func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string
 			delete_schedule := new(myinit.Schedule)
 			del_schedule_result, _ := myinit.Engine.Where("schedule_fenxi_id=? ", schedule_fenxi_id).Delete(delete_schedule)
 			fmt.Println(del_result, del_schedule_result)
-			return "开盘>0 或者即时盘 >0"
+			fmt.Println("开盘>0 或者即时盘 >0")
+			return false
 		}
 
 		predict1_result, predict1_cmt := analyse.AnalysePanResult1(pan_int_info, pan_float_info, pan_string_info)
@@ -202,5 +203,7 @@ func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string
 			fmt.Println(delete2)
 		}
 	}
-	return "成功"
+	fmt.Println("成功")
+
+	return true
 }

@@ -9,7 +9,7 @@ func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_str
 	myinit.Myinit()
 	AsiaPanLog := new(myinit.AsiaPanLog)
 	AsiaPanLog.ScheduleFenxiId = pan_int_info["schedule_fenxi_id"]
-	AsiaPanLog.ScheduleBetDate = pan_string_info["schedule_bet_date"]
+//	AsiaPanLog.ScheduleBetDate = pan_string_info["schedule_bet_date"]
 	AsiaPanLog.ScheduleDate = pan_string_info["schedule_date"]
 	AsiaPanLog.ScheduleNo = pan_string_info["schedule_no"]
 	AsiaPanLog.ScheduleResultNo = pan_string_info["schedule_result_no"]
@@ -55,7 +55,7 @@ func UpdateAsiaPanResult(schedule_bet_date string, pan_float_info map[string]flo
 	update_affected, update_err = 
 		myinit.Engine.
 		Cols("schedule_score", "schedule_spf_result",  "schedule_rqspf_result", "schedule_zjq_result", "schedule_bqc_result").
-		Where("schedule_result_no=? AND schedule_bet_date=? ", pan_string_info["schedule_result_no"], schedule_bet_date).Update(AsiaPanLog)
+		Where("schedule_result_no=? AND schedule_date=? ", pan_string_info["schedule_result_no"], schedule_bet_date).Update(AsiaPanLog)
 	fmt.Println(update_affected)
 	fmt.Println(update_err)
 	return update_affected, update_err
