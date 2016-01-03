@@ -1,9 +1,5 @@
 package lastpan
 
-
-
-
-
 type LastPan struct {
 	LastId     string
 	ScheduleNo string

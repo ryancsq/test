@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	
+
 	"500kan/util/myinit"
 	"500kan/util/parseurl"
 
@@ -11,19 +11,35 @@ import (
 )
 
 func main() {
-	myinit.Myinit()
-	date := "2015-12-21"
-//	now := time.Now()
-//	date := now.Format("2006-01-02")
-//	date := ""
-	parseurl.ParseBetUrl(date,true)	
-//	parseurl.ParseResultUrl(date,true)	
+//	runPanMap()
+runParseUrl()
+}
+func runParseUrl(){
 	
-//	one_ago_unix := time.Now().Unix() - 86400
-//	t1 := time.Unix(one_ago_unix, 0)
-//	parseurl.ParseResultUrl(t1.Format("2006-01-02"),true)	
+	myinit.Myinit()
+		date := "2015-12-21"
+	//	now := time.Now()
+	//	date := now.Format("2006-01-02")
+//	date := ""
+	parseurl.ParseBetUrl(date, true)
+	parseurl.ParseResultUrl(date, true)
 
-//	moveToBackup()
+	//	one_ago_unix := time.Now().Unix() - 86400
+	//	t1 := time.Unix(one_ago_unix, 0)
+	//	parseurl.ParseResultUrl(t1.Format("2006-01-02"),true)
+
+//		moveToBackup()
+}
+
+func runPanMap() {
+	date := ""
+	for i := 91; i < 150; i++ {
+		tmp := (int)(86400) * i
+		ago_unix := time.Now().Unix() - int64(tmp)
+		t1 := time.Unix(ago_unix, 0)
+		date = t1.Format("2006-01-02")
+		parseurl.ParsePanMap(date, true)
+	}
 }
 
 func moveToBackup() {

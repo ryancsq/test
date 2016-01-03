@@ -152,11 +152,14 @@ var WeekDesc = map[string]string{
 var Engine *xorm.Engine
 
 var DateUrl = "http://trade.500.com/jczq/?date=TTT&playtype=both"
+var DateUrlAjax = "http://odds.500.com/fenxi1/yazhi.php?id=FID&ctype=1&start=NUM&r=1&style=0&guojia=0"
 
 var IndexUrl = "http://trade.500.com/jczq/"
+
 var PanUrl = "http://odds.500.com/fenxi/yazhi-TTT.shtml"
 var ResultUrl = "http://zx.500.com/jczq/kaijiang.php?d=DDD"
 var PanChangeUrl = "http://odds.500.com/fenxi1/inc/yazhiajax.php?fid=FID&id=CID&r=1"
+
 
 var mysql_dsn = "root:@tcp(localhost:3306)/new"
 
@@ -192,7 +195,7 @@ func initDb() {
 	}
 	defer f.Close()
 	Engine.Logger = xorm.NewSimpleLogger(f)
-	fmt.Println(Engine)
+//	fmt.Println(Engine)
 }
 
 func GetOddsFromAjax(schedule_fenxi_id int, company_id string)(body string) {
@@ -202,6 +205,43 @@ func GetOddsFromAjax(schedule_fenxi_id int, company_id string)(body string) {
 	
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", odd_detail_url, nil)
+
+	request.Header.Set("Accept", "application/json, text/javascript,*/*")
+	request.Header.Set("X-Requested-With", "XMLHttpRequest")
+	request.Header.Set("Connection", "Keep-Alive")
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
+
+	response, _ := client.Do(request)
+	if response.StatusCode == 200 {
+		fmt.Println(response.Header.Get("Content-Encoding"))
+		reader, _ := gzip.NewReader(response.Body)
+		for {
+			buf := make([]byte, 1024)
+			n, err := reader.Read(buf)
+
+			if err != nil && err != io.EOF {
+				panic(err)
+			}
+
+			if n == 0 {
+				break
+			}
+			body += string(buf)
+		}
+//		fmt.Println(body)
+
+	}
+	return body
+}
+
+func GetOddItemFromAjax(idx int,schedule_fenxi_id int)(body string) {
+	odd_ajax_url := strings.Replace(DateUrlAjax, "FID", strconv.Itoa(schedule_fenxi_id), -1)
+
+	odd_ajax_url = strings.Replace(odd_ajax_url, "NUM", strconv.Itoa(idx), -1)
+	
+	client := &http.Client{}
+	request, _ := http.NewRequest("GET", odd_ajax_url, nil)
 
 	request.Header.Set("Accept", "application/json, text/javascript,*/*")
 	request.Header.Set("X-Requested-With", "XMLHttpRequest")

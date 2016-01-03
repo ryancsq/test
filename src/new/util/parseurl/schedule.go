@@ -15,6 +15,39 @@ import (
 	"github.com/opesun/goquery"
 )
 
+func ParsePanMap(date string, history bool) {
+	bet_url := strings.Replace(myinit.DateUrl, "TTT", date, -1)
+	
+	fmt.Println("bet_url:",bet_url)
+
+	pan_url := myinit.PanUrl
+
+	html_obj, _ := goquery.ParseUrl(bet_url)
+
+	schedule_trs := html_obj.Find(".bet_table tbody tr")
+	for i, _ := range schedule_trs {
+		schedule_int_info := make(map[string]int)
+		schedule_string_info := make(map[string]string)
+
+		// insert schedule
+		fid, _ := strconv.Atoi(schedule_trs.Eq(i).Attr("fid"))
+		schedule_int_info["schedule_fenxi_id"] = int(fid)
+		schedule_string_info["schedule_home"] = common.ConvToGB(schedule_trs.Eq(i).Attr("homesxname"))
+		schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_trs.Eq(i).Attr("awaysxname"))
+		schedule_string_info["schedule_date"] = schedule_trs.Eq(i).Attr("pdate")
+		
+		schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(fid), -1)
+//		fmt.Println("schedule_pan_url:",schedule_pan_url)
+		//		go parseOddUrl(schedule_odds_url, fid)
+//		if(fid!=505301){
+//			continue
+//		}
+		GetPanValue(schedule_pan_url, fid, schedule_string_info, date)
+
+	}
+}
+
+
 func ParseBetUrl(date string, history bool) {
 	bet_url := strings.Replace(myinit.DateUrl, "TTT", date, -1)
 	if date == "" {
@@ -25,11 +58,13 @@ func ParseBetUrl(date string, history bool) {
 	pan_url := myinit.PanUrl
 
 	html_obj, _ := goquery.ParseUrl(bet_url)
+//		fmt.Println(html_obj.HtmlAll())
+
 	schedule_trs := html_obj.Find(".bet_table tbody tr")
 	for i, _ := range schedule_trs {
 		is_end := schedule_trs.Eq(i).Attr("isend")
 		if is_end == "1" && history == false {
-			fmt.Println("is_end")
+//			fmt.Println("is_end")
 			continue
 		}
 
@@ -53,7 +88,7 @@ func ParseBetUrl(date string, history bool) {
 
 		today := time.Now().Format("2006-01-02")
 		schedule_is_today := today == schedule_string_info["schedule_date"]
-		fmt.Println("schedule_is_today:===",schedule_is_today)
+//		fmt.Println("schedule_is_today:===",schedule_is_today)
 		if schedule_is_today == false && history == false {
 			continue
 		}
@@ -61,8 +96,7 @@ func ParseBetUrl(date string, history bool) {
 		// end insert schedule
 
 		schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(fid), -1)
-		fmt.Println("schedule_pan_url:",schedule_pan_url)
-		//		go parseOddUrl(schedule_odds_url, fid)
+//		fmt.Println("schedule_pan_url:",schedule_pan_url)
 		res := ParsePanUrl(schedule_pan_url, fid, schedule_string_info, date)
 		fmt.Println(res)
 		fmt.Println("---------")
@@ -73,7 +107,7 @@ func ParseBetUrl(date string, history bool) {
 			continue
 		}
 		calcScheduleResult(schedule_int_info,schedule_string_info)
-
+	return
 	}
 }
 

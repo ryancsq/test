@@ -4,44 +4,43 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-//	"encoding/json"
-
-//	"500kan/util/analyse"
-//	"500kan/util/asiapan"
-//	"500kan/util/asiapanlog"
-//	"500kan/util/common"
+	
+	"500kan/util/asiapanlog"
+	"500kan/util/panmap"
 	"500kan/util/myinit"
 
+	"github.com/bitly/go-simplejson"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"
-		"github.com/bitly/go-simplejson"
-
 )
 
-func ParsePanChangeUrl(schedule_fenxi_id int, company_id string) (res bool) {
-	body_content := myinit.GetOddsFromAjax(schedule_fenxi_id,company_id)
+func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_info map[string]int, pan_html_float_info map[string]float32, pan_html_string_info map[string]string) (res bool) {
+	pan_int_info := make(map[string]int)
+	pan_float_info := make(map[string]float32)
+	pan_string_info := make(map[string]string)
+
+pan_int_info = pan_html_int_info
+pan_float_info = pan_html_float_info
+pan_string_info = pan_html_string_info
+
+	asiapanlog.ClearOldPanLog(schedule_fenxi_id, company_id)
+	body_content := myinit.GetOddsFromAjax(schedule_fenxi_id, company_id)
 	body := []byte(body_content)
 	body_json, err := simplejson.NewJson(body)
 	if err != nil {
-	    panic(err.Error())
+		panic(err.Error())
 	}
-	tr_items,_ :=body_json.Array()
-	for _,tr_string := range tr_items{
-
-		pan_int_info := make(map[string]int)
-		pan_float_info := make(map[string]float32)
-		pan_string_info := make(map[string]string)
-		table_string := "<table>"+tr_string.(string)+"</table>"
+	tr_items, _ := body_json.Array()
+	for _, tr_string := range tr_items {
+		table_string := "<table>" + tr_string.(string) + "</table>"
 		html_obj, _ := goquery.ParseString(table_string)
-		fmt.Println("=====")
+		pan_log_item := html_obj.Find("table tbody tr td")
 
-		pan_log_item := html_obj.Find("table tbody tr td")					
-		
 		home_td := pan_log_item.Eq(0)
 		pan_td := pan_log_item.Eq(1)
 		guest_td := pan_log_item.Eq(2)
-		time_td := pan_log_item.Eq(3)		
-			
+		time_td := pan_log_item.Eq(3)
+
 		pan_string_info["real_pan_desc"] = pan_td.Text()
 
 		home_real_water_string := home_td.Text()
@@ -85,16 +84,21 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string) (res bool) {
 			pan_int_info["home_water_change_type"] = 1             // up
 			pan_string_info["home_water_change_type_desc"] = "水位升" // up
 		}
-		
+
 		real_pan_string := strings.Replace(pan_string_info["real_pan_desc"], pan_string_info["home_pan_change_type_desc"], "", -1)
 		real_pan_desc := strings.TrimSpace(real_pan_string)
-		
-		fmt.Println("pan::::")
-		fmt.Println(pan)
-		fmt.Println(pan_string_info["real_pan_desc"])
 
+		has_panmap, real_pan_value := panmap.GetPanValueByPanDesc(real_pan_desc)
+		if has_panmap == false {
+			fmt.Println(pan_string_info["schedule_home"])
+			fmt.Println(pan_string_info["company_id"])
+			fmt.Println(pan_string_info["company_name"])
+			fmt.Println(real_pan_desc, "no exist")
+			return false
+		}
+		pan_float_info["real_pan"] = real_pan_value
+		asiapanlog.Add(pan_int_info, pan_float_info, pan_string_info)
 	}
-
 
 	return true
 }
