@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"500kan/util/common"
 	"500kan/util/myinit"
@@ -15,56 +14,32 @@ import (
 	"github.com/opesun/goquery"
 )
 
-func ParsePanMap(date string, history bool) {
-	bet_url := strings.Replace(myinit.DateUrl, "TTT", date, -1)
-	
-	fmt.Println("bet_url:",bet_url)
-
-	pan_url := myinit.PanUrl
-
-	html_obj, _ := goquery.ParseUrl(bet_url)
-
-	schedule_trs := html_obj.Find(".bet_table tbody tr")
-	for i, _ := range schedule_trs {
-		schedule_int_info := make(map[string]int)
-		schedule_string_info := make(map[string]string)
-
-		// insert schedule
-		fid, _ := strconv.Atoi(schedule_trs.Eq(i).Attr("fid"))
-		schedule_int_info["schedule_fenxi_id"] = int(fid)
-		schedule_string_info["schedule_home"] = common.ConvToGB(schedule_trs.Eq(i).Attr("homesxname"))
-		schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_trs.Eq(i).Attr("awaysxname"))
-		schedule_string_info["schedule_date"] = schedule_trs.Eq(i).Attr("pdate")
-		
-		schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(fid), -1)
-//		fmt.Println("schedule_pan_url:",schedule_pan_url)
-		//		go parseOddUrl(schedule_odds_url, fid)
-//		if(fid!=505301){
-//			continue
-//		}
-		GetPanValue(schedule_pan_url, fid, schedule_string_info, date)
-
-	}
-}
-
-
-func ParseBetUrl(date string, history bool) {
-	bet_url := strings.Replace(myinit.DateUrl, "TTT", date, -1)
+func getBetUrl(date string) (bet_url string) {
+	bet_url = strings.Replace(myinit.DateUrl, "TTT", date, -1)
 	if date == "" {
 		bet_url = myinit.IndexUrl
 	}
-	fmt.Println("bet_url:",bet_url)
+	fmt.Println("bet_url:", bet_url)
 
-	pan_url := myinit.PanUrl
+	return bet_url
+}
+
+func ParseBetUrl(date string, history bool) {
+	bet_url := getBetUrl(date)
 
 	html_obj, _ := goquery.ParseUrl(bet_url)
-//		fmt.Println(html_obj.HtmlAll())
 
 	schedule_trs := html_obj.Find(".bet_table tbody tr")
 	for i, _ := range schedule_trs {
 		is_end := schedule_trs.Eq(i).Attr("isend")
 		if is_end == "1" && history == false {
-//			fmt.Println("is_end")
+			continue
+		}
+
+		today := common.GetToday()
+		schedule_is_today := today == schedule_trs.Eq(i).Attr("pdate")
+		//		fmt.Println("schedule_is_today:===",schedule_is_today)
+		if schedule_is_today == false && history == false {
 			continue
 		}
 
@@ -72,8 +47,8 @@ func ParseBetUrl(date string, history bool) {
 		schedule_string_info := make(map[string]string)
 
 		// insert schedule
-		fid, _ := strconv.Atoi(schedule_trs.Eq(i).Attr("fid"))
-		schedule_int_info["schedule_fenxi_id"] = int(fid)
+		schedule_fenxi_id, _ := strconv.Atoi(schedule_trs.Eq(i).Attr("fid"))
+		schedule_int_info["schedule_fenxi_id"] = int(schedule_fenxi_id)
 		schedule_string_info["schedule_home"] = common.ConvToGB(schedule_trs.Eq(i).Attr("homesxname"))
 		schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_trs.Eq(i).Attr("awaysxname"))
 		schedule_string_info["schedule_date"] = schedule_trs.Eq(i).Attr("pdate")
@@ -83,101 +58,87 @@ func ParseBetUrl(date string, history bool) {
 		schedule_string_info["schedule_rq_num"] = schedule_trs.Eq(i).Attr("rq")
 		week_date := schedule_string_info["schedule_no"][0:1]
 		schedule_string_info["schedule_result_no"] = myinit.WeekDesc[week_date] + schedule_string_info["schedule_no"][1:]
-
 		schedule_string_info["schedule_bet_end_time"] = schedule_trs.Eq(i).Attr("pendtime")
 
-		today := time.Now().Format("2006-01-02")
-		schedule_is_today := today == schedule_string_info["schedule_date"]
-//		fmt.Println("schedule_is_today:===",schedule_is_today)
-		if schedule_is_today == false && history == false {
-			continue
-		}
 		schedule.Add(schedule_int_info, schedule_string_info)
 		// end insert schedule
 
-		schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(fid), -1)
-//		fmt.Println("schedule_pan_url:",schedule_pan_url)
-		res := ParsePanUrl(schedule_pan_url, fid, schedule_string_info, date)
-		fmt.Println(res)
-		fmt.Println("---------")
-		fmt.Println(schedule_string_info["schedule_date"])
-		fmt.Println(schedule_string_info["schedule_no"])
-		fmt.Println("---------")
+		//parse pan data
+		res := ParsePanByScheduleFenxiId(schedule_fenxi_id, date, schedule_string_info)
 		if res == false {
 			continue
 		}
-		calcScheduleResult(schedule_int_info,schedule_string_info)
-	return
+		//计算预测比率
+		calcScheduleResult(schedule_int_info, schedule_string_info)
 	}
 }
 
+func ParsePanByScheduleFenxiId(schedule_fenxi_id int, date string, schedule_string_info map[string]string) (res bool) {
+	pan_url := myinit.PanUrl
+	schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(schedule_fenxi_id), -1)
+	res = ParsePanUrl(schedule_pan_url, schedule_fenxi_id, schedule_string_info, date)
+	//		fmt.Println("schedule_pan_url:",schedule_pan_url)
+	//		fmt.Println("---------")
+	//		fmt.Println(schedule_string_info["schedule_date"])
+	//		fmt.Println(schedule_string_info["schedule_no"])
+	//		fmt.Println("---------")
+			fmt.Println("parse:",res)
+	return res
+}
 
-func calcScheduleResult(schedule_int_info map[string]int,schedule_string_info map[string]string){
-		predict1_json := make(map[string]interface{})
-		predict2_json := make(map[string]interface{})
+func getPredictResMap(predict_type int, schedule_string_info map[string]string) (res_predict_map map[string]interface{}) {
+	predict_map := make(map[string]interface{})
+	predict_sql := ""
+	if predict_type == 1 {
+		predict_sql = "select predict1_result,count(*) as predict1_cnt from `pk_asia_pan_backup` where schedule_date = ? and schedule_no=? group by predict1_result"
+	} else if predict_type == 2 {
+		predict_sql = "select predict2_result,count(*) as predict2_cnt from `pk_asia_pan_backup` where schedule_date = ? and schedule_no=? group by predict2_result"
+	}
+	predict_res_map, _ := myinit.Engine.Query(predict_sql, schedule_string_info["schedule_date"], schedule_string_info["schedule_no"])
 
-		sql1 := "select predict1_result,count(*) as predict1_cnt from `pk_asia_pan_log` where schedule_date = ? and schedule_no=? group by predict1_result"
-		res_map, _ := myinit.Engine.Query(sql1, schedule_string_info["schedule_date"], schedule_string_info["schedule_no"])
-
-		for _, row := range res_map {
-			json_key := ""
-			json_val := ""
-			for colName, colValue := range row {
-
-				value := common.BytesToString(colValue)
-				fmt.Println("colName")
-				fmt.Println(colName)
-				fmt.Println("value")
-				fmt.Println(value)
+	for _, predict_res_row := range predict_res_map {
+		predict_map_key := ""
+		predict_map_val := ""
+		for colName, colValue := range predict_res_row {
+			value := common.BytesToString(colValue)
+			if(value==""){
+				value = "空"
+			}
+						fmt.Println("colName")
+						fmt.Println(colName)
+						fmt.Println("value")
+						fmt.Println(value)
+			if predict_type == 1 {
 				if colName == "predict1_result" {
-					json_key = value
+					predict_map_key = value
 				}
 				if colName == "predict1_cnt" {
-					json_val = value
+					predict_map_val = value
+				}
+			} else if predict_type == 2 {
+				if colName == "predict2_result" {
+					predict_map_key = value
+				}
+				if colName == "predict2_cnt" {
+					predict_map_val = value
 				}
 			}
-			predict1_json[json_key] = json_val
-
 		}
+		predict_map[predict_map_key] = predict_map_val
 
-		sql2 := "select predict2_result,count(*) as predict2_cnt from `pk_asia_pan_log` where schedule_date = ? and schedule_no=? group by predict2_result"
-		res2_map, _ := myinit.Engine.Query(sql2, schedule_string_info["schedule_date"], schedule_string_info["schedule_no"])
+	}
+	res_predict_map = predict_map
+	return res_predict_map
+}
 
-		for _, row2 := range res2_map {
-			json_key2 := ""
-			json_val2 := ""
-			for colName2, colValue2 := range row2 {
+func calcScheduleResult(schedule_int_info map[string]int, schedule_string_info map[string]string) {
+	predict1_map := getPredictResMap(1, schedule_string_info)
+	predict2_map := getPredictResMap(2, schedule_string_info)
 
-				value2 := common.BytesToString(colValue2)
-				if colName2 == "predict2_result" {
-					json_key2 = value2
-				}
-				if colName2 == "predict2_cnt" {
-					json_val2 = value2
-				}
-			}
-			predict2_json[json_key2] = json_val2
+	predict_map := make(map[string]interface{})
+	predict_map["predict1"] = predict1_map
+	predict_map["predict2"] = predict2_map
 
-		}
-
-//		predict1_string, _ := json.Marshal(predict1_json)
-//		fmt.Println(string(predict1_string))
-
-//		predict2_string, _ := json.Marshal(predict2_json)
-//		fmt.Println(string(predict2_string))
-
-		predict_json := make(map[string]interface{})
-		predict_json["predict1"] = predict1_json
-		predict_json["predict2"] = predict2_json
-
-		predict_json_string, _ := json.Marshal(predict_json)
-
-		exist_schedule := new(myinit.Schedule)
-		exist_schedule.ScheduleAlResult = string(predict_json_string)
-		update_affected, update_err :=
-			myinit.Engine.Cols("schedule_al_result").
-				Where("schedule_fenxi_id=? AND schedule_date = ? and schedule_no=? ", schedule_int_info["schedule_fenxi_id"], schedule_string_info["schedule_date"], schedule_string_info["schedule_no"]).Update(exist_schedule)
-
-		fmt.Println(update_affected)
-		fmt.Println(update_err)
+	predict_json, _ := json.Marshal(predict_map)
+	schedule.UpdateScheduleCalcResult(predict_json, schedule_int_info, schedule_string_info)
 }

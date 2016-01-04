@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	
+
 	"500kan/util/asiapanlog"
-	"500kan/util/panmap"
 	"500kan/util/myinit"
+	"500kan/util/panmap"
 
 	"github.com/bitly/go-simplejson"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,9 +19,20 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_in
 	pan_float_info := make(map[string]float32)
 	pan_string_info := make(map[string]string)
 
-pan_int_info = pan_html_int_info
-pan_float_info = pan_html_float_info
-pan_string_info = pan_html_string_info
+	for k_i, v_i := range pan_html_int_info {
+		pan_int_info[k_i] = v_i
+	}
+	for k_f, v_f := range pan_html_float_info {
+		pan_float_info[k_f] = v_f
+	}
+	for k_s, v_s := range pan_html_string_info {
+		pan_string_info[k_s] = v_s
+	}
+
+	pan_string_info["predict1_result"] = ""
+	pan_string_info["predict1_cmt"] = ""
+	pan_string_info["predict2_result"] = ""
+	pan_string_info["predict2_cmt"] = ""
 
 	asiapanlog.ClearOldPanLog(schedule_fenxi_id, company_id)
 	body_content := myinit.GetOddsFromAjax(schedule_fenxi_id, company_id)

@@ -2,14 +2,13 @@ package asiapanlog
 
 import (
 	"500kan/util/myinit"
-	"fmt"
+//	"fmt"
 )
 
 func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) {
 	myinit.Myinit()
 	AsiaPanLog := new(myinit.AsiaPanLog)
 	AsiaPanLog.ScheduleFenxiId = pan_int_info["schedule_fenxi_id"]
-	//	AsiaPanLog.ScheduleBetDate = pan_string_info["schedule_bet_date"]
 	AsiaPanLog.ScheduleDate = pan_string_info["schedule_date"]
 	AsiaPanLog.ScheduleNo = pan_string_info["schedule_no"]
 	AsiaPanLog.ScheduleResultNo = pan_string_info["schedule_result_no"]
@@ -40,9 +39,8 @@ func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_str
 	AsiaPanLog.Predict2Result = pan_string_info["predict2_result"]
 	AsiaPanLog.Predict2Comment = pan_string_info["predict2_cmt"]
 
-	ins_affected, ins_err := myinit.Engine.Insert(AsiaPanLog)
-	fmt.Println(ins_affected)
-	fmt.Println(ins_err)
+	myinit.Engine.Insert(AsiaPanLog)
+	
 }
 
 func UpdateAsiaPanResult(schedule_bet_date string, pan_float_info map[string]float32, pan_string_info map[string]string) (update_affected int64, update_err error) {
@@ -56,13 +54,13 @@ func UpdateAsiaPanResult(schedule_bet_date string, pan_float_info map[string]flo
 		myinit.Engine.
 			Cols("schedule_score", "schedule_spf_result", "schedule_rqspf_result", "schedule_zjq_result", "schedule_bqc_result").
 			Where("schedule_result_no=? AND schedule_date=? ", pan_string_info["schedule_result_no"], schedule_bet_date).Update(AsiaPanLog)
-	fmt.Println(update_affected)
-	fmt.Println(update_err)
+//	fmt.Println(update_affected)
+//	fmt.Println(update_err)
 	return update_affected, update_err
 }
 
 func ClearOldPanLog(schedule_fenxi_id int, company_id string) {
 	delete_log := new(myinit.AsiaPanLog)
-	delete_res, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_log)
-	fmt.Println(delete_res)
+	myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_log)
+//	fmt.Println(delete_res)
 }
