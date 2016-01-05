@@ -1,0 +1,230 @@
+CREATE TABLE `pk_pan_map` (
+  `pan_id` int(11) NOT NULL AUTO_INCREMENT,
+  `pan_desc` varchar(50) NOT NULL,
+  `pan_value` float(8,2) NOT NULL,
+  PRIMARY KEY (`pan_id`),
+  KEY `desc` (`pan_desc`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (1, '受半球/一球', 0.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (2, '受半球', 0.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (3, '受一球', 1.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (4, '受球半/两球', 1.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (5, '一球', -1.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (6, '受球半', 1.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (7, '平手', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (8, '平手/半球', -0.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (9, '球半', -1.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (10, '受平手/半球', 0.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (11, '半球', -0.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (12, '受两球半', 2.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (13, '受三球', 3.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (14, '受四球', 4.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (15, '受两球半/三球', 2.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (16, '受两球/两球半', 2.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (17, '受三球半', 3.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (18, '半球/一球', -0.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (19, '受一球/球半', 1.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (20, '受两球', 2.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (21, '球半/两球', -1.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (22, '一球/球半', -1.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (23, '两球', -2.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (24, '两球半', -2.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (25, '两球半/三球', -2.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (26, '两球/两球半', -2.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (27, '三球/三球半', -3.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (28, '三球', -3.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (29, '三球半', -3.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (30, '四球半', -4.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (31, '四球', -4.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (32, '三球半/四球', -3.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (33, '受三球半/四球', 3.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (34, '受四球/四球半', 4.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (35, '受三球/三球半', 3.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (36, '受四球半', 4.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (37, '五球', -5.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (38, '四球半/五球', -4.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (39, '七球半/八球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (40, '七球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (41, '八球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (42, '七球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (43, '六球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (44, '五球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (45, '五球/五球半', -2.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (46, '五球半/六球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (47, '六球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (48, '四球/四球半', -4.25);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (49, '八球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (50, '受五球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (51, '受五球', 5.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (52, '受四球半/五球', 4.75);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (53, '受五球/五球半', 2.50);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (54, '受五球半/六球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (55, '受六球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (56, '受六球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (57, '受七球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (58, '受六球/六球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (59, '受六球半/七球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (60, '受七球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (61, '六球/六球半', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (62, '受九球', 0.00);
+INSERT INTO `pk_pan_map` (`pan_id`, `pan_desc`, `pan_value`) VALUES (63, '九球', 0.00);
+
+CREATE TABLE `pk_schedule` (
+  `schedule_id` int(11) NOT NULL AUTO_INCREMENT,
+  `schedule_date` char(10) NOT NULL,
+  `schedule_no` varchar(10) NOT NULL,
+  `schedule_result_no` varchar(30) NOT NULL,
+  `schedule_league` varchar(100) NOT NULL,
+  `schedule_home` varchar(100) NOT NULL,
+  `schedule_guest` varchar(100) NOT NULL,
+  `schedule_week_day` varchar(30) NOT NULL,
+  `schedule_fenxi_id` int(11) NOT NULL,
+  `schedule_bet_end_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `schedule_rq_num` varchar(10) NOT NULL,
+  `schedule_score` varchar(30) NOT NULL,
+  `schedule_spf_result` varchar(30) NOT NULL,
+  `schedule_spf_odd` float(8,2) NOT NULL,
+  `schedule_rqspf_result` varchar(30) NOT NULL,
+  `schedule_rqspf_odd` float(8,2) NOT NULL,
+  `schedule_zjq_result` varchar(30) NOT NULL,
+  `schedule_zjq_odd` float(8,2) NOT NULL,
+  `schedule_bqc_result` varchar(30) NOT NULL,
+  `schedule_bqc_odd` float(8,2) NOT NULL,
+  `schedule_rate` float(8,2) NOT NULL,
+  `schedule_al_result` varchar(255) NOT NULL,
+  PRIMARY KEY (`schedule_id`),
+  KEY `fenxi` (`schedule_fenxi_id`),
+  KEY `date_no` (`schedule_date`,`schedule_no`),
+  KEY `date_result_no` (`schedule_date`,`schedule_result_no`),
+  KEY `id_date_no` (`schedule_fenxi_id`,`schedule_date`,`schedule_no`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `pk_asia_pan` (
+  `asia_id` int(11) NOT NULL AUTO_INCREMENT,
+  `schedule_fenxi_id` int(11) NOT NULL,
+  `schedule_date` char(10) NOT NULL,
+  `schedule_no` varchar(10) NOT NULL,
+  `schedule_result_no` varchar(30) NOT NULL,
+  `schedule_league` varchar(100) NOT NULL,
+  `schedule_home` varchar(100) NOT NULL,
+  `schedule_guest` varchar(100) NOT NULL,
+  `schedule_game_desc` varchar(255) NOT NULL,
+  `schedule_date_desc` varchar(255) NOT NULL,
+  `company_id` smallint(6) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `is_big_company` tinyint(1) NOT NULL,
+  `open_pan` float(10,4) NOT NULL,
+  `open_pan_desc` varchar(50) NOT NULL,
+  `open_home_water` float(10,4) NOT NULL,
+  `open_guest_water` float(10,4) NOT NULL,
+  `open_pan_time` varchar(50) NOT NULL DEFAULT '',
+  `real_pan` float(10,4) NOT NULL,
+  `real_pan_desc` varchar(50) NOT NULL,
+  `real_home_water` float(10,4) NOT NULL,
+  `real_guest_water` float(10,4) NOT NULL,
+  `pan_change_time` varchar(50) NOT NULL DEFAULT '',
+  `home_pan_change_type` tinyint(1) NOT NULL,
+  `home_pan_change_type_desc` char(10) NOT NULL,
+  `home_water_change_type` tinyint(1) NOT NULL,
+  `home_water_change_type_desc` char(10) NOT NULL,
+  `predict1_result` varchar(30) NOT NULL,
+  `predict1_comment` varchar(255) NOT NULL,
+  `predict2_result` varchar(30) NOT NULL,
+  `predict2_comment` varchar(255) NOT NULL,
+  `schedule_score` varchar(30) NOT NULL,
+  `schedule_spf_result` varchar(30) NOT NULL,
+  `schedule_rqspf_result` varchar(30) NOT NULL,
+  `schedule_zjq_result` varchar(30) NOT NULL,
+  `schedule_bqc_result` varchar(30) NOT NULL,
+  PRIMARY KEY (`asia_id`),
+  KEY `fenxi` (`schedule_fenxi_id`),
+  KEY `fenxi_company` (`schedule_fenxi_id`,`company_id`),
+  KEY `date_result_no` (`schedule_date`,`schedule_result_no`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `pk_asia_pan_backup` (
+  `asia_id` int(11) NOT NULL AUTO_INCREMENT,
+  `schedule_fenxi_id` int(11) NOT NULL,
+  `schedule_date` char(10) NOT NULL,
+  `schedule_no` varchar(10) NOT NULL,
+  `schedule_result_no` varchar(30) NOT NULL,
+  `schedule_league` varchar(100) NOT NULL,
+  `schedule_home` varchar(100) NOT NULL,
+  `schedule_guest` varchar(100) NOT NULL,
+  `schedule_game_desc` varchar(255) NOT NULL,
+  `schedule_date_desc` varchar(255) NOT NULL,
+  `company_id` smallint(6) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `is_big_company` tinyint(1) NOT NULL,
+  `open_pan` float(10,4) NOT NULL,
+  `open_pan_desc` varchar(50) NOT NULL,
+  `open_home_water` float(10,4) NOT NULL,
+  `open_guest_water` float(10,4) NOT NULL,
+  `open_pan_time` varchar(50) NOT NULL DEFAULT '',
+  `real_pan` float(10,4) NOT NULL,
+  `real_pan_desc` varchar(50) NOT NULL,
+  `real_home_water` float(10,4) NOT NULL,
+  `real_guest_water` float(10,4) NOT NULL,
+  `pan_change_time` varchar(50) NOT NULL DEFAULT '',
+  `home_pan_change_type` tinyint(1) NOT NULL,
+  `home_pan_change_type_desc` char(10) NOT NULL,
+  `home_water_change_type` tinyint(1) NOT NULL,
+  `home_water_change_type_desc` char(10) NOT NULL,
+  `predict1_result` varchar(30) NOT NULL,
+  `predict1_comment` varchar(255) NOT NULL,
+  `predict2_result` varchar(30) NOT NULL,
+  `predict2_comment` varchar(255) NOT NULL,
+  `schedule_score` varchar(30) NOT NULL,
+  `schedule_spf_result` varchar(30) NOT NULL,
+  `schedule_rqspf_result` varchar(30) NOT NULL,
+  `schedule_zjq_result` varchar(30) NOT NULL,
+  `schedule_bqc_result` varchar(30) NOT NULL,
+  PRIMARY KEY (`asia_id`),
+  KEY `date_no` (`schedule_date`,`schedule_no`),
+  KEY `fenxi_company` (`schedule_fenxi_id`,`company_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `pk_asia_pan_log` (
+  `asia_id` int(11) NOT NULL AUTO_INCREMENT,
+  `schedule_fenxi_id` int(11) NOT NULL,
+  `schedule_date` char(10) NOT NULL,
+  `schedule_no` varchar(10) NOT NULL,
+  `schedule_result_no` varchar(30) NOT NULL,
+  `schedule_league` varchar(100) NOT NULL,
+  `schedule_home` varchar(100) NOT NULL,
+  `schedule_guest` varchar(100) NOT NULL,
+  `schedule_game_desc` varchar(255) NOT NULL,
+  `schedule_date_desc` varchar(255) NOT NULL,
+  `company_id` smallint(6) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `is_big_company` tinyint(1) NOT NULL,
+  `open_pan` float(10,4) NOT NULL,
+  `open_pan_desc` varchar(50) NOT NULL,
+  `open_home_water` float(10,4) NOT NULL,
+  `open_guest_water` float(10,4) NOT NULL,
+  `open_pan_time` varchar(50) NOT NULL DEFAULT '',
+  `real_pan` float(10,4) NOT NULL,
+  `real_pan_desc` varchar(50) NOT NULL,
+  `real_home_water` float(10,4) NOT NULL,
+  `real_guest_water` float(10,4) NOT NULL,
+  `pan_change_time` varchar(50) NOT NULL DEFAULT '',
+  `home_pan_change_type` tinyint(1) NOT NULL,
+  `home_pan_change_type_desc` char(10) NOT NULL,
+  `home_water_change_type` tinyint(1) NOT NULL,
+  `home_water_change_type_desc` char(10) NOT NULL,
+  `predict1_result` varchar(30) NOT NULL,
+  `predict1_comment` varchar(255) NOT NULL,
+  `predict2_result` varchar(30) NOT NULL,
+  `predict2_comment` varchar(255) NOT NULL,
+  `schedule_score` varchar(30) NOT NULL,
+  `schedule_spf_result` varchar(30) NOT NULL,
+  `schedule_rqspf_result` varchar(30) NOT NULL,
+  `schedule_zjq_result` varchar(30) NOT NULL,
+  `schedule_bqc_result` varchar(30) NOT NULL,
+  PRIMARY KEY (`asia_id`),
+  KEY `fenxi_company` (`schedule_fenxi_id`,`company_id`),
+  KEY `date_result_no` (`schedule_date`,`schedule_result_no`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+

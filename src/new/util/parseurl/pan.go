@@ -76,7 +76,8 @@ func checkPanUseable(schedule_pan_url string, schedule_fenxi_id int, schedule_st
 			fmt.Println("pan html:", pan_float_info["open_pan"], pan_float_info["real_pan"])
 			fmt.Println("开盘>0 或者即时盘 >0")
 			return false
-		}		
+		}	
+		
 	}
 	if odds_tr.Length() >= 30 {
 		ajax_res := checkPanUseableFromAjax(30, schedule_fenxi_id)
@@ -271,7 +272,16 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 		//		fmt.Println("date:", pan_string_info["schedule_date"], pan_string_info["schedule_home"])
 		//		fmt.Println("open:", pan_string_info["open_pan_desc"], pan_float_info["open_pan"])
 		//		fmt.Println("real:", real_pan_desc, pan_float_info["real_pan"])
-common.SleepMy()
+		
+		
+		exist_asiapan := new(myinit.AsiaPan)
+		has, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Get(exist_asiapan)
+		if(has==true){
+			if(pan_string_info["pan_change_time"]==exist_asiapan.PanChangeTime){
+				continue
+			}
+		}
+
 		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
 		if parse_change_data == false {
 			continue
@@ -284,7 +294,7 @@ common.SleepMy()
 			fmt.Println("开盘>0 或者即时盘 >0")
 			return false
 		}
-
+		
 		predict1_result, predict1_cmt := analyse.AnalysePanResult1(pan_int_info, pan_float_info, pan_string_info)
 		pan_string_info["predict1_result"] = predict1_result
 		pan_string_info["predict1_cmt"] = predict1_cmt
@@ -345,6 +355,7 @@ func checkWaterSum(schedule_fenxi_id int, company_id string, pan_float_info map[
 
 	if (sum_real_water < 1.75 || sum_real_water > 2) || (sum_open_water < 1.75 || sum_open_water > 2) {
 		asiapan.DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id, company_id)
+		asiapanbackup.DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id, company_id)
 		return false
 	}
 	return true
@@ -461,9 +472,13 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 			pan_string_info["home_water_change_type_desc"] = "水位升" // up
 		}
 		
-		common.SleepMy()
-
-
+		exist_asiapan := new(myinit.AsiaPan)
+		has, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Get(exist_asiapan)
+		if(has==true){
+			if(pan_string_info["pan_change_time"]==exist_asiapan.PanChangeTime){
+				continue
+			}
+		}	
 		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
 		if parse_change_data == false {
 			continue

@@ -68,3 +68,10 @@ func UpdateAsiaPanBackupInfo(pan_int_info map[string]int, pan_float_info map[str
 //	fmt.Println(update_err)
 	return update_affected, update_err
 }
+
+
+func DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id int, company_id string) {
+	delete_asiapanbackup := new(myinit.AsiaPanBackup)
+	myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_asiapanbackup)
+
+}

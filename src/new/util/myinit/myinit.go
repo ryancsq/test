@@ -292,6 +292,8 @@ func GetOddsFromAjax(schedule_fenxi_id int, company_id string)(body string) {
 
 	}else{
 		fmt.Println(response.StatusCode,body)
+		time.Sleep(30*time.Second)
+		return GetOddsFromAjax(schedule_fenxi_id , company_id )
 	}
 	return body
 }
