@@ -7,7 +7,7 @@ import (
 
 	"500kan/util/analyse"
 	"500kan/util/asiapan"
-	"500kan/util/asiapanbackup"
+	"500kan/util/asiapanlog"
 	"500kan/util/common"
 	"500kan/util/myinit"
 	"500kan/util/schedule"
@@ -271,8 +271,7 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 		real_pan_desc := strings.TrimSpace(real_pan_string)
 		//		fmt.Println("date:", pan_string_info["schedule_date"], pan_string_info["schedule_home"])
 		//		fmt.Println("open:", pan_string_info["open_pan_desc"], pan_float_info["open_pan"])
-		//		fmt.Println("real:", real_pan_desc, pan_float_info["real_pan"])
-		
+		//		fmt.Println("real:", real_pan_desc, pan_float_info["real_pan"])		
 		
 		exist_asiapan := new(myinit.AsiaPan)
 		has, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Get(exist_asiapan)
@@ -280,11 +279,6 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			if(pan_string_info["pan_change_time"]==exist_asiapan.PanChangeTime){
 				continue
 			}
-		}
-
-		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
-		if parse_change_data == false {
-			continue
 		}
 
 		if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
@@ -339,11 +333,11 @@ func addAsiaPan(schedule_fenxi_id int, company_id string, pan_int_info map[strin
 		if exist_asiapan.PanChangeTime != pan_string_info["pan_change_time"] {
 			fmt.Println(pan_string_info["company_name"] + "pan有变化！")
 			asiapan.UpdateAsiaPanInfo(pan_int_info, pan_float_info, pan_string_info)
-			asiapanbackup.UpdateAsiaPanBackupInfo(pan_int_info, pan_float_info, pan_string_info)
+			asiapanlog.Add(pan_int_info, pan_float_info, pan_string_info)
 		}
 	} else {
 		asiapan.Add(pan_int_info, pan_float_info, pan_string_info)
-		asiapanbackup.Add(pan_int_info, pan_float_info, pan_string_info)
+		asiapanlog.Add(pan_int_info, pan_float_info, pan_string_info)
 	}
 	//delete water > 2 and < 1.75
 	checkWaterSum(schedule_fenxi_id, company_id, pan_float_info)
@@ -355,7 +349,7 @@ func checkWaterSum(schedule_fenxi_id int, company_id string, pan_float_info map[
 
 	if (sum_real_water < 1.75 || sum_real_water > 2) || (sum_open_water < 1.75 || sum_open_water > 2) {
 		asiapan.DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id, company_id)
-		asiapanbackup.DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id, company_id)
+//		asiapanbackup.DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id, company_id)
 		return false
 	}
 	return true
@@ -479,10 +473,10 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 				continue
 			}
 		}	
-		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
-		if parse_change_data == false {
-			continue
-		}
+//		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
+//		if parse_change_data == false {
+//			continue
+//		}
 		if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
 			asiapan.ClearShouPanByScheduleFenxiId(schedule_fenxi_id)
 			schedule.ClearScheduleByFenxiId(schedule_fenxi_id)

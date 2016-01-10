@@ -15,21 +15,21 @@ func main() {
 }
 func runParseUrl() {
 	myinit.Myinit()
-	//		date := "2016-01-01"
+	//	date := "2016-01-01"
 	//	now := time.Now()
 	//	date := now.Format("2006-01-02")
 	date := ""
-	parseurl.ParseBetUrl(date, true)
-	parseurl.ParseResultUrl(date, true)
+	parseurl.ParseBetUrl(date, false)
+	parseurl.ParseResultUrl(date, false)
 
 	one_ago_unix := time.Now().Unix() - 86400
 	t1 := time.Unix(one_ago_unix, 0)
-	parseurl.ParseResultUrl(t1.Format("2006-01-02"), true)
+	parseurl.ParseResultUrl(t1.Format("2006-01-02"), false)
 
 	moveToBackup()
 
 	time.Sleep(30 * time.Second)
-	runParseUrl()
+//	runParseUrl()
 }
 
 func moveToBackup() {

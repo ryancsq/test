@@ -82,7 +82,7 @@ func ParsePanByScheduleFenxiId(schedule_fenxi_id int, date string, schedule_stri
 	//		fmt.Println(schedule_string_info["schedule_date"])
 	//		fmt.Println(schedule_string_info["schedule_no"])
 	//		fmt.Println("---------")
-			fmt.Println("parse:",res)
+	fmt.Println("parse:", res)
 	return res
 }
 
@@ -101,13 +101,13 @@ func getPredictResMap(predict_type int, schedule_string_info map[string]string) 
 		predict_map_val := ""
 		for colName, colValue := range predict_res_row {
 			value := common.BytesToString(colValue)
-			if(value==""){
+			if value == "" {
 				value = "空"
 			}
-						fmt.Println("colName")
-						fmt.Println(colName)
-						fmt.Println("value")
-						fmt.Println(value)
+			fmt.Println("colName")
+			fmt.Println(colName)
+			fmt.Println("value")
+			fmt.Println(value)
 			if predict_type == 1 {
 				if colName == "predict1_result" {
 					predict_map_key = value
