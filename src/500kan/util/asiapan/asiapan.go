@@ -2,15 +2,25 @@ package asiapan
 
 import (
 	"500kan/util/myinit"
-	"fmt"
+//	"fmt"
 )
+
+func ClearShouPanByScheduleFenxiId(schedule_fenxi_id int) {
+	delete_asiapan := new(myinit.AsiaPan)
+	myinit.Engine.Where("schedule_fenxi_id=? ", schedule_fenxi_id).Delete(delete_asiapan)
+
+}
+
+func DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id int, company_id string) {
+	delete_asiapan := new(myinit.AsiaPan)
+	myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_asiapan)
+
+}
 
 func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) {
 	myinit.Myinit()
 	AsiaPan := new(myinit.AsiaPan)
 	AsiaPan.ScheduleFenxiId = pan_int_info["schedule_fenxi_id"]
-//	AsiaPan.ScheduleBetDate = pan_string_info["schedule_bet_date"]
-
 	AsiaPan.ScheduleDate = pan_string_info["schedule_date"]
 	AsiaPan.ScheduleNo = pan_string_info["schedule_no"]
 	AsiaPan.ScheduleResultNo = pan_string_info["schedule_result_no"]
@@ -41,9 +51,9 @@ func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_str
 	AsiaPan.Predict2Result = pan_string_info["predict2_result"]
 	AsiaPan.Predict2Comment = pan_string_info["predict2_cmt"]
 
-	ins_affected, ins_err := myinit.Engine.Insert(AsiaPan)
-	fmt.Println(ins_affected)
-	fmt.Println(ins_err)
+	myinit.Engine.Insert(AsiaPan)
+//	fmt.Println(ins_affected)
+//	fmt.Println(ins_err)
 }
 
 func UpdateAsiaPanInfo(pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) (update_affected int64, update_err error) {
@@ -67,8 +77,7 @@ func UpdateAsiaPanInfo(pan_int_info map[string]int, pan_float_info map[string]fl
 		myinit.Engine.
 			Cols("real_pan", "real_pan_desc", "real_home_water", "real_guest_water", "pan_change_time", "home_pan_change_type", "home_pan_change_type_desc", "home_water_change_type", "home_water_change_type_desc", "predict1_result", "predict1_comment", "predict2_result", "predict2_comment").
 			Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Update(update_lastpan)
-	fmt.Println(update_affected)
-	fmt.Println(update_err)
+	
 	return update_affected, update_err
 }
 
@@ -83,7 +92,7 @@ func UpdateAsiaPanResult(schedule_bet_date string, pan_float_info map[string]flo
 		myinit.Engine.
 			Cols("schedule_score", "schedule_spf_result", "schedule_rqspf_result", "schedule_zjq_result", "schedule_bqc_result").
 			Where("schedule_result_no=? AND schedule_date=? ", pan_string_info["schedule_result_no"], schedule_bet_date).Update(AsiaPan)
-	fmt.Println(update_affected)
-	fmt.Println(update_err)
+//	fmt.Println(update_affected)
+//	fmt.Println(update_err)
 	return update_affected, update_err
 }

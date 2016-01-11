@@ -9,6 +9,13 @@ import (
 
 	"github.com/guotie/gogb2312"
 )
+func SleepMy(){
+		time.Sleep(100*time.Microsecond)
+}
+
+func GetToday()(today string){
+	return time.Now().Format("2006-01-02")
+}
 
 func ConvToFloat32(float_string string) (float_val float32) {
 	//	fmt.Println(float_string)
@@ -54,3 +61,4 @@ func StringToBytes(s string) []byte {
 	bh := reflect.SliceHeader{sh.Data, sh.Len, 0}
 	return *(*[]byte)(unsafe.Pointer(&bh))
 }
+

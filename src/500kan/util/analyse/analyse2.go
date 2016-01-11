@@ -21,7 +21,7 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 	schedule_game_desc := pan_string_info["schedule_game_desc"]
 
 	fid := pan_int_info["schedule_fenxi_id"]
-	cid := pan_string_info["cid"]
+	cid := pan_string_info["company_id"]
 
 	myinit.Myinit()
 	engine = myinit.Engine

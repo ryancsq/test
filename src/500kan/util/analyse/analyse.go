@@ -29,7 +29,7 @@ func checkWaterIsDown(fid int, cid string) (ret bool) {
 func checkPanNotChange(fid int, cid string, pan_value float32) (ret bool) {
 	exist_up := new(myinit.AsiaPanLog)
 	
-	total_pan_change, _ := engine.Where("open_pan!=last_pan AND schedule_fenxi_id=? AND company_id=? AND open_pan=?", fid, cid, pan_value).Count(exist_up)
+	total_pan_change, _ := engine.Where("open_pan!=real_pan AND schedule_fenxi_id=? AND company_id=? AND open_pan=?", fid, cid, pan_value).Count(exist_up)
 
 	if total_pan_change > 0 {
 		return false
