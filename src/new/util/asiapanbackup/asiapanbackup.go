@@ -5,6 +5,18 @@ import (
 //	"fmt"
 )
 
+func ClearShouPanByScheduleFenxiId(schedule_fenxi_id int) {
+	delete_asiapan := new(myinit.AsiaPanBackup)
+	myinit.Engine.Where("schedule_fenxi_id=? ", schedule_fenxi_id).Delete(delete_asiapan)
+
+}
+
+func DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id int, company_id string) {
+	delete_asiapan := new(myinit.AsiaPanBackup)
+	myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_asiapan)
+
+}
+
 func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) {
 	myinit.Myinit()
 	AsiaPanBackup := new(myinit.AsiaPanBackup)
@@ -40,7 +52,8 @@ func Add(pan_int_info map[string]int, pan_float_info map[string]float32, pan_str
 	AsiaPanBackup.Predict2Comment = pan_string_info["predict2_cmt"]
 
 	myinit.Engine.Insert(AsiaPanBackup)
-	
+//	fmt.Println(ins_affected)
+//	fmt.Println(ins_err)
 }
 
 func UpdateAsiaPanBackupInfo(pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) (update_affected int64, update_err error) {
@@ -64,14 +77,22 @@ func UpdateAsiaPanBackupInfo(pan_int_info map[string]int, pan_float_info map[str
 		myinit.Engine.
 			Cols("real_pan", "real_pan_desc", "real_home_water", "real_guest_water", "pan_change_time", "home_pan_change_type", "home_pan_change_type_desc", "home_water_change_type", "home_water_change_type_desc", "predict1_result", "predict1_comment", "predict2_result", "predict2_comment").
 			Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Update(update_lastpan)
-//	fmt.Println(update_affected)
-//	fmt.Println(update_err)
+	
 	return update_affected, update_err
 }
 
-
-func DeletePanByFenxiIdAndCompanyId(schedule_fenxi_id int, company_id string) {
-	delete_asiapanbackup := new(myinit.AsiaPanBackup)
-	myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Delete(delete_asiapanbackup)
-
+func UpdateAsiaPanBackupResult(schedule_bet_date string, pan_float_info map[string]float32, pan_string_info map[string]string) (update_affected int64, update_err error) {
+	AsiaPanBackup := new(myinit.AsiaPanBackup)
+	AsiaPanBackup.ScheduleScore = pan_string_info["schedule_score"]
+	AsiaPanBackup.ScheduleSpfResult = pan_string_info["schedule_spf_result"]
+	AsiaPanBackup.ScheduleRqspfResult = pan_string_info["schedule_rqspf_result"]
+	AsiaPanBackup.ScheduleZjqResult = pan_string_info["schedule_zjq_result"]
+	AsiaPanBackup.ScheduleBqcResult = pan_string_info["schedule_bqc_result"]
+	update_affected, update_err =
+		myinit.Engine.
+			Cols("schedule_score", "schedule_spf_result", "schedule_rqspf_result", "schedule_zjq_result", "schedule_bqc_result").
+			Where("schedule_result_no=? AND schedule_date=? ", pan_string_info["schedule_result_no"], schedule_bet_date).Update(AsiaPanBackup)
+//	fmt.Println(update_affected)
+//	fmt.Println(update_err)
+	return update_affected, update_err
 }

@@ -29,7 +29,7 @@ func runParseUrl() {
 	moveToBackup()
 
 	time.Sleep(30 * time.Second)
-//	runParseUrl()
+	runParseUrl()
 }
 
 func moveToBackup() {

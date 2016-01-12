@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"500kan/util/asiapan"
-	"500kan/util/asiapanlog"
+	"500kan/util/asiapanbackup"
 	"500kan/util/common"
 	"500kan/util/myinit"
 	"500kan/util/schedule"
@@ -26,7 +26,7 @@ func ParseResultUrl(date string, history bool) {
 	schedule_float_info := make(map[string]float32)
 
 	pan_string_info := make(map[string]string)
-	pan_float_info := make(map[string]float32)
+//	pan_float_info := make(map[string]float32)
 	html_obj, _ := goquery.ParseUrl(result_url)
 	schedule_trs := html_obj.Find(".ld_table tbody tr")
 	for i, _ := range schedule_trs {
@@ -59,7 +59,7 @@ func ParseResultUrl(date string, history bool) {
 		}
 		schedule.UpdateScheduleResult(date, schedule_float_info, schedule_string_info)
 		asiapan.UpdateAsiaPanResult(date, schedule_float_info, pan_string_info)
-		asiapanlog.UpdateAsiaPanResult(date, pan_float_info, pan_string_info)
+		asiapanbackup.UpdateAsiaPanBackupResult(date, schedule_float_info, pan_string_info)
 
 	}
 }
