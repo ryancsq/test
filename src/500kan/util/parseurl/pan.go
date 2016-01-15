@@ -19,7 +19,7 @@ import (
 
 func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string_info map[string]string, date string) (res bool) {
 	useable := checkPanUseable(schedule_pan_url, schedule_fenxi_id, schedule_string_info, date)
-	fmt.Println("userabel", useable)
+	//	fmt.Println("userabel", useable)
 	if useable == false {
 		return false
 	}
@@ -243,13 +243,15 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 		pan_float_info["real_home_water"] = float32(home_real_water_32)
 		pan_float_info["real_guest_water"] = float32(guest_real_water_32)
 
-		pan_string_info["pan_change_time"] = td_of_pan_time.Eq(0).Text()
+		pan_string_info["pan_change_time"] = strings.TrimSpace(td_of_pan_time.Eq(0).Text())
 
 		td_item_of_real_pan := tds_of_realtime_pan_table.Eq(1)
 		home_pan_change_type := common.ConvToGB(td_item_of_real_pan.Find("font").Text())
 		home_pan_change_type = strings.TrimSpace(home_pan_change_type)
-		pan_int_info["home_pan_change_type"] = 0
+		fmt.Println("home_pan_desc:", home_pan_change_type)
 
+		pan_int_info["home_pan_change_type"] = 0
+		pan_string_info["home_pan_change_type_desc"] = ""
 		if home_pan_change_type == "升" {
 			pan_int_info["home_pan_change_type"] = 1
 			pan_string_info["home_pan_change_type_desc"] = home_pan_change_type
@@ -258,9 +260,12 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			pan_int_info["home_pan_change_type"] = -1
 			pan_string_info["home_pan_change_type_desc"] = home_pan_change_type
 		}
+		fmt.Println("home_pan_change_type_desc:", pan_string_info["home_pan_change_type_desc"])
 
 		home_water_up_down_flag := tds_of_realtime_pan_table.Eq(0).Attr("class")
 		pan_int_info["home_water_change_type"] = 0
+		pan_string_info["home_water_change_type_desc"] = ""
+
 		if home_water_up_down_flag == "ping" {
 			pan_int_info["home_water_change_type"] = -1            // down
 			pan_string_info["home_water_change_type_desc"] = "水位降" // down
@@ -270,18 +275,20 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			pan_string_info["home_water_change_type_desc"] = "水位升" // up
 		}
 
-		real_pan_string := strings.Replace(pan_string_info["real_pan_desc"], pan_string_info["home_pan_change_type_desc"], "", -1)
-		real_pan_desc := strings.TrimSpace(real_pan_string)
+		//		real_pan_string := strings.Replace(pan_string_info["real_pan_desc"], pan_string_info["home_pan_change_type_desc"], "", -1)
+		//		real_pan_desc := strings.TrimSpace(real_pan_string)
 		//		fmt.Println("date:", pan_string_info["schedule_date"], pan_string_info["schedule_home"])
 		//		fmt.Println("open:", pan_string_info["open_pan_desc"], pan_float_info["open_pan"])
 		//		fmt.Println("real:", real_pan_desc, pan_float_info["real_pan"])
 
-		exist_asiapan := new(myinit.AsiaPan)
-		has, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Get(exist_asiapan)
+		exist_asiapanlog := new(myinit.AsiaPanLog)
+		has, f_err := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? AND pan_change_time=?", schedule_fenxi_id, company_id, pan_string_info["pan_change_time"]).Get(exist_asiapanlog)
+		fmt.Println("has:", has, ":", schedule_fenxi_id, ":", company_id, ":", pan_string_info["pan_change_time"])
+		fmt.Println("ajax:", f_err)
+
 		if has == true {
-			if pan_string_info["pan_change_time"] == exist_asiapan.PanChangeTime {
-				continue
-			}
+			fmt.Println("go has:is:", pan_string_info["pan_change_time"])
+			continue
 		}
 
 		if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
@@ -289,7 +296,7 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			asiapanbackup.ClearShouPanByScheduleFenxiId(schedule_fenxi_id)
 
 			schedule.ClearScheduleByFenxiId(schedule_fenxi_id)
-			fmt.Println("pan html:", pan_float_info["open_pan"], pan_float_info["real_pan"])
+			//			fmt.Println("pan html:", pan_float_info["open_pan"], pan_float_info["real_pan"])
 			fmt.Println("开盘>0 或者即时盘 >0")
 			return false
 		}
@@ -307,13 +314,13 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 		// fmt.Println("change_time:" + change_time)
 		// fmt.Println("open_time:" + open_time)
 		// fmt.Println("flag:" + home_water_change_type + " " + home_water_up_down_flag)
-		fmt.Println("home_real_water:", pan_float_info["real_home_water"])
-		fmt.Println(home_real_water_32)
-		fmt.Println(float32(home_real_water_32))
-		fmt.Println("home_real_water water sting:" + home_real_water_str + home_real_water_string)
-		fmt.Println("guest_real_water:", pan_float_info["real_guest_water"])
-		fmt.Println("guest_real_water water sting:" + guest_real_water_str + guest_real_water_string)
-		fmt.Println("pan:", pan_float_info["real_pan"], " ", real_pan_desc)
+		//		fmt.Println("home_real_water:", pan_float_info["real_home_water"])
+		//		fmt.Println(home_real_water_32)
+		//		fmt.Println(float32(home_real_water_32))
+		//		fmt.Println("home_real_water water sting:" + home_real_water_str + home_real_water_string)
+		//		fmt.Println("guest_real_water:", pan_float_info["real_guest_water"])
+		//		fmt.Println("guest_real_water water sting:" + guest_real_water_str + guest_real_water_string)
+		//		fmt.Println("pan:", pan_float_info["real_pan"], " ", real_pan_desc)
 
 		// fmt.Println("open_home_water water:", open_home_water)
 		// fmt.Println("open_guest_water water:", open_guest_water)
@@ -444,12 +451,14 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 		pan_float_info["real_home_water"] = float32(home_real_water_32)
 		pan_float_info["real_guest_water"] = float32(guest_real_water_32)
 
-		pan_string_info["pan_change_time"] = td_of_pan_time.Eq(0).Text()
+		pan_string_info["pan_change_time"] = strings.TrimSpace(td_of_pan_time.Eq(0).Text())
 
 		td_item_of_real_pan := tds_of_realtime_pan_table.Eq(1)
 		home_pan_change_type := td_item_of_real_pan.Find("font").Text()
 		home_pan_change_type = strings.TrimSpace(home_pan_change_type)
+		fmt.Println("home_pan_desc:", home_pan_change_type)
 		pan_int_info["home_pan_change_type"] = 0
+		pan_string_info["home_pan_change_type_desc"] = ""
 
 		if home_pan_change_type == "升" {
 			pan_int_info["home_pan_change_type"] = 1
@@ -461,9 +470,11 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 			pan_string_info["home_pan_change_type_desc"] = home_pan_change_type
 
 		}
+		fmt.Println("home_pan_change_type_desc:", pan_string_info["home_pan_change_type_desc"])
 
 		home_water_up_down_flag := tds_of_realtime_pan_table.Eq(0).Attr("class")
 		pan_int_info["home_water_change_type"] = 0
+		pan_string_info["home_water_change_type_desc"] = ""
 		if home_water_up_down_flag == "ping" {
 			pan_int_info["home_water_change_type"] = -1            // down
 			pan_string_info["home_water_change_type_desc"] = "水位降" // down
@@ -473,13 +484,16 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 			pan_string_info["home_water_change_type_desc"] = "水位升" // up
 		}
 
-		exist_asiapan := new(myinit.AsiaPan)
-		has, _ := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? ", schedule_fenxi_id, company_id).Get(exist_asiapan)
+		exist_asiapanlog := new(myinit.AsiaPanLog)
+		has, f_err := myinit.Engine.Where("schedule_fenxi_id=? AND company_id=? AND pan_change_time=?", schedule_fenxi_id, company_id, pan_string_info["pan_change_time"]).Get(exist_asiapanlog)
+		fmt.Println("has:", has, ":", schedule_fenxi_id, ":", company_id, ":", pan_string_info["pan_change_time"])
+		fmt.Println("ajax:", f_err)
+
 		if has == true {
-			if pan_string_info["pan_change_time"] == exist_asiapan.PanChangeTime {
-				continue
-			}
+			fmt.Println("go has:is:", pan_string_info["pan_change_time"])
+			continue
 		}
+
 		//		parse_change_data := ParsePanChangeUrl(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
 		//		if parse_change_data == false {
 		//			continue
@@ -507,8 +521,8 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 		// fmt.Println("change_time:" + change_time)
 		// fmt.Println("open_time:" + open_time)
 		// fmt.Println("flag:" + home_water_change_type + " " + home_water_up_down_flag)
-		fmt.Println("home_real_water:", pan_float_info["real_home_water"])
-		fmt.Println("home_real_water water sting:" + home_real_water_string)
+		//		fmt.Println("home_real_water:", pan_float_info["real_home_water"])
+		//		fmt.Println("home_real_water water sting:" + home_real_water_string)
 		// fmt.Println("guest_real_water:", guest_real_water)
 		// fmt.Println("guest_real_water water sting:" + guest_real_water_string)
 		// fmt.Println("pan:", real_pan, " ", real_pan_desc)

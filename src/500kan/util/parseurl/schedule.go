@@ -40,7 +40,7 @@ func ParseBetUrl(date string, history bool) {
 		schedule_is_today := today == schedule_trs.Eq(i).Attr("pdate")
 		//		fmt.Println("schedule_is_today:===",schedule_is_today)
 		if schedule_is_today == false && history == false {
-			continue
+//			continue
 		}
 
 		schedule_int_info := make(map[string]int)
@@ -70,6 +70,7 @@ func ParseBetUrl(date string, history bool) {
 		}
 		//计算预测比率
 		calcScheduleResult(schedule_int_info, schedule_string_info)
+//		return 
 	}
 }
 
@@ -82,7 +83,7 @@ func ParsePanByScheduleFenxiId(schedule_fenxi_id int, date string, schedule_stri
 	//		fmt.Println(schedule_string_info["schedule_date"])
 	//		fmt.Println(schedule_string_info["schedule_no"])
 	//		fmt.Println("---------")
-	fmt.Println("parse:", res)
+//	fmt.Println("parse:", res)
 	return res
 }
 
@@ -104,10 +105,10 @@ func getPredictResMap(predict_type int, schedule_string_info map[string]string) 
 			if value == "" {
 				value = "空"
 			}
-			fmt.Println("colName")
-			fmt.Println(colName)
-			fmt.Println("value")
-			fmt.Println(value)
+//			fmt.Println("colName")
+//			fmt.Println(colName)
+//			fmt.Println("value")
+//			fmt.Println(value)
 			if predict_type == 1 {
 				if colName == "predict1_result" {
 					predict_map_key = value

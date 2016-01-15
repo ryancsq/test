@@ -1,7 +1,7 @@
 package analyse
 
 import (
-	"fmt"
+//	"fmt"
 
 	"500kan/util/myinit"
 
@@ -25,8 +25,8 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 
 	myinit.Myinit()
 	engine = myinit.Engine
-	fmt.Println("+++++++++++")
-	fmt.Println(fid)
+//	fmt.Println("+++++++++++")
+//	fmt.Println(fid)
 	switch {
 	case open_pan == 0:
 		if checkPanNotChange(fid, cid, open_pan) == true {
@@ -91,7 +91,7 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 			}
 		}
 
-		fmt.Println("open:", open_pan, ret, cmt)
+//		fmt.Println("open:", open_pan, ret, cmt)
 	case open_pan == (-0.25):
 		if checkPanNotChange(fid, cid, open_pan) == true {
 			if checkWaterNotChange(fid, cid) == true {
@@ -255,7 +255,7 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 			}
 
 		}
-		fmt.Println("-0.75: open:", open_pan)
+//		fmt.Println("-0.75: open:", open_pan)
 
 	case open_pan <= -1:
 		//	case -1.25:
@@ -291,9 +291,9 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 				cmt += "其余情况 初盘水位	主队水位	＜客队水位	主队胜	对应结果：	3"
 			}
 		}
-		fmt.Println("-1 open:", open_pan)
+//		fmt.Println("-1 open:", open_pan)
 	default:
-		fmt.Println("qita open:", open_pan)
+//		fmt.Println("qita open:", open_pan)
 		ret = ""
 		cmt = ""
 

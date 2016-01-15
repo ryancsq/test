@@ -11,7 +11,13 @@ import (
 )
 
 func main() {
+		now := time.Now()
+		t := now.Format("2006-01-02 15:04:05")
+		fmt.Println(t)
 	runParseUrl()
+	now2 := time.Now()
+		t2 := now2.Format("2006-01-02 15:04:05")
+		fmt.Println(t2)
 }
 func runParseUrl() {
 	myinit.Myinit()
@@ -28,8 +34,8 @@ func runParseUrl() {
 
 	moveToBackup()
 
-	time.Sleep(30 * time.Second)
-	runParseUrl()
+//	time.Sleep(30 * time.Second)
+//	runParseUrl()
 }
 
 func moveToBackup() {

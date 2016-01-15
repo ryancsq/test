@@ -1,7 +1,7 @@
 package analyse
 
 import (
-	"fmt"
+//	"fmt"
 
 	"500kan/util/myinit"
 
@@ -23,11 +23,11 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 	company_id := pan_string_info["company_id"]
 	myinit.Myinit()
 	engine = myinit.Engine
-	fmt.Println("+++++++++++")
-	fmt.Println(schedule_fenxi_id)
+//	fmt.Println("+++++++++++")
+//	fmt.Println(schedule_fenxi_id)
 	switch {
 	case open_pan == 0:
-		fmt.Println("0 open:", open_pan)
+//		fmt.Println("0 open:", open_pan)
 
 		if open_pan == real_pan {
 			if open_pan_home_water <= 0.875 {
@@ -74,9 +74,9 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 			}
 		}
 
-		fmt.Println("open:", open_pan, ret, cmt)
+//		fmt.Println("open:", open_pan, ret, cmt)
 	case open_pan == (-0.25):
-		fmt.Println("-0.25 open:", open_pan)
+//		fmt.Println("-0.25 open:", open_pan)
 		if open_pan == real_pan {
 			if open_pan_home_water <= 0.875 {
 				ret = "3"
@@ -160,9 +160,9 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 				cmt = "主队水位	＞0.875		客队胜	对应结果：	0"
 			}
 		} else if home_pan_change_type == -1 {
-			fmt.Println("-0.5====")
-			fmt.Println(open_pan_home_water)
-			fmt.Println(real_pan_home_water)
+//			fmt.Println("-0.5====")
+//			fmt.Println(open_pan_home_water)
+//			fmt.Println(real_pan_home_water)
 			if open_pan_home_water > 0.875 {
 				if real_pan_home_water <= 0.875 {
 					ret = "3/1"
@@ -176,7 +176,7 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 //				cmt = "其余情况			平或客队胜	对应结果：	1/0"
 			}
 		}
-		fmt.Println("-0.5 open:", open_pan)
+//		fmt.Println("-0.5 open:", open_pan)
 
 	case open_pan == (-0.75):
 		if open_pan == real_pan {
@@ -210,7 +210,7 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 			}
 
 		}
-		fmt.Println("-0.75: open:", open_pan)
+//		fmt.Println("-0.75: open:", open_pan)
 
 	case open_pan <= -1:
 		//	case -1.25:
@@ -247,9 +247,9 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 				cmt = "其余情况 初盘水位	主队水位	＜0.875	主队胜	对应结果：	3"	
 				}		
 		}
-		fmt.Println("-1 open:", open_pan)
+//		fmt.Println("-1 open:", open_pan)
 	default:
-		fmt.Println("qita open:", open_pan)
+//		fmt.Println("qita open:", open_pan)
 		ret = ""
 		cmt = ""
 

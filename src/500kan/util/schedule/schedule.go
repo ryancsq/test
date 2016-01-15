@@ -14,7 +14,7 @@ func Add(schedule_int_info map[string]int, schedule_string_info map[string]strin
 	myinit.Myinit()
 	has := CheckExists(schedule_string_info["schedule_date"], schedule_string_info["schedule_no"])
 
-	if has {
+	if has==true {
 		fmt.Println(schedule_string_info["schedule_home"] + " vs " + schedule_string_info["schedule_guest"] + "已存在！")
 	} else {
 		Schedule := new(myinit.Schedule)
