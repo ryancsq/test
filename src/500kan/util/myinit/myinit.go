@@ -204,6 +204,7 @@ var ResultUrl = "http://zx.500.com/jczq/kaijiang.php?d=DDD"
 var PanChangeUrl = "http://odds.500.com/fenxi1/inc/yazhiajax.php?fid=FID&id=CID&t=TTT&r=1"
 
 
+var lock_file_name = "/root/check_file"
 var mysql_dsn = "root:@tcp(localhost:3306)/new"
 
 //var mysql_dsn = "root:123456@tcp(192.168.1.172:3306)/test_ha2"
@@ -213,6 +214,21 @@ var mysql_dsn = "root:@tcp(localhost:3306)/new"
 func Myinit() {
 	initDb()
 }
+
+func CheckFile() (res bool) {
+	file := lock_file_name
+	_, err := os.Stat(file)
+	if err == nil || os.IsExist(err) {
+		return false
+	}
+	os.Create(file)
+	return true
+}
+func DeleteFile() {
+	file := lock_file_name
+	os.Remove(file)
+}
+
 
 func initDb() {
 	var err error

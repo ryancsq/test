@@ -10,14 +10,27 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+
 func main() {
-		now := time.Now()
-		t := now.Format("2006-01-02 15:04:05")
-		fmt.Println(t)
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+			myinit.DeleteFile()
+		}
+	}()
+	check := myinit.CheckFile()
+	if check == false {
+		fmt.Println("exist file")
+		return
+	}
+
+	now := time.Now()
+	t := now.Format("2006-01-02 15:04:05")
+	fmt.Println(t)
 	runParseUrl()
 	now2 := time.Now()
-		t2 := now2.Format("2006-01-02 15:04:05")
-		fmt.Println(t2)
+	t2 := now2.Format("2006-01-02 15:04:05")
+	fmt.Println(t2)
 }
 func runParseUrl() {
 	myinit.Myinit()
@@ -34,14 +47,13 @@ func runParseUrl() {
 
 	moveToBackup()
 
-//	time.Sleep(30 * time.Second)
-//	runParseUrl()
+	time.Sleep(30 * time.Second)
+	runParseUrl()
 }
 
 func moveToBackup() {
 	now := time.Now()
 	today := now.Format("2006-01-02")
 	del_sql := "delete from `pk_asia_pan` where schedule_date < ?"
-	del_res, del_err := myinit.Engine.Exec(del_sql, today)
-	fmt.Println(del_res, del_err)
+	myinit.Engine.Exec(del_sql, today)
 }
