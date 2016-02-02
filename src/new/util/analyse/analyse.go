@@ -3,7 +3,7 @@ package analyse
 import (
 	"strings"
 
-	"500kan/util/myinit"
+	"new/util/myinit"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"

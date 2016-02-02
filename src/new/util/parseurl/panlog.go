@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"500kan/util/asiapanlog"
-	"500kan/util/myinit"
-	"500kan/util/panmap"
+	"new/util/asiapanlog"
+	"new/util/myinit"
+	"new/util/panmap"
 
 	"github.com/bitly/go-simplejson"
 	_ "github.com/go-sql-driver/mysql"

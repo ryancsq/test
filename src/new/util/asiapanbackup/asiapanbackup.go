@@ -1,7 +1,7 @@
 package asiapanbackup
 
 import (
-	"500kan/util/myinit"
+	"new/util/myinit"
 //	"fmt"
 )
 

@@ -24,11 +24,27 @@ func getBetUrl(date string) (bet_url string) {
 	return bet_url
 }
 
+func pareseScheduleTR(schedule_tr goquery.Nodes) (schedule_int_info map[string]int, schedule_string_info map[string]string) {
+	schedule_int_info = make(map[string]int)
+	schedule_string_info = make(map[string]string)
+	schedule_fenxi_id, _ := strconv.Atoi(schedule_tr.Attr("fid"))
+	schedule_int_info["schedule_fenxi_id"] = int(schedule_fenxi_id)
+	schedule_string_info["schedule_home"] = common.ConvToGB(schedule_tr.Attr("homesxname"))
+	schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_tr.Attr("awaysxname"))
+	schedule_string_info["schedule_date"] = schedule_tr.Attr("pdate")
+	schedule_string_info["schedule_league"] = common.ConvToGB(schedule_tr.Attr("lg"))
+	schedule_string_info["schedule_week_day"] = common.ConvToGB(schedule_tr.Attr("gdate"))
+	schedule_string_info["schedule_no"] = schedule_tr.Attr("pname")
+	schedule_string_info["schedule_rq_num"] = schedule_tr.Attr("rq")
+	week_date := schedule_string_info["schedule_no"][0:1]
+	schedule_string_info["schedule_result_no"] = myinit.WeekDesc[week_date] + schedule_string_info["schedule_no"][1:]
+	schedule_string_info["schedule_bet_end_time"] = schedule_tr.Attr("pendtime")
+	return schedule_int_info, schedule_string_info
+}
+
 func ParseBetUrl(date string, history bool) {
 	bet_url := getBetUrl(date)
-
 	html_obj, _ := goquery.ParseUrl(bet_url)
-
 	schedule_trs := html_obj.Find(".bet_table tbody tr")
 	for i, _ := range schedule_trs {
 		is_end := schedule_trs.Eq(i).Attr("isend")
@@ -40,37 +56,22 @@ func ParseBetUrl(date string, history bool) {
 		schedule_is_today := today == schedule_trs.Eq(i).Attr("pdate")
 		//		fmt.Println("schedule_is_today:===",schedule_is_today)
 		if schedule_is_today == false && history == false {
-//			continue
+			//			continue
 		}
 
-		schedule_int_info := make(map[string]int)
-		schedule_string_info := make(map[string]string)
-
-		// insert schedule
-		schedule_fenxi_id, _ := strconv.Atoi(schedule_trs.Eq(i).Attr("fid"))
-		schedule_int_info["schedule_fenxi_id"] = int(schedule_fenxi_id)
-		schedule_string_info["schedule_home"] = common.ConvToGB(schedule_trs.Eq(i).Attr("homesxname"))
-		schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_trs.Eq(i).Attr("awaysxname"))
-		schedule_string_info["schedule_date"] = schedule_trs.Eq(i).Attr("pdate")
-		schedule_string_info["schedule_league"] = common.ConvToGB(schedule_trs.Eq(i).Attr("lg"))
-		schedule_string_info["schedule_week_day"] = common.ConvToGB(schedule_trs.Eq(i).Attr("gdate"))
-		schedule_string_info["schedule_no"] = schedule_trs.Eq(i).Attr("pname")
-		schedule_string_info["schedule_rq_num"] = schedule_trs.Eq(i).Attr("rq")
-		week_date := schedule_string_info["schedule_no"][0:1]
-		schedule_string_info["schedule_result_no"] = myinit.WeekDesc[week_date] + schedule_string_info["schedule_no"][1:]
-		schedule_string_info["schedule_bet_end_time"] = schedule_trs.Eq(i).Attr("pendtime")
-
+		schedule_int_info, schedule_string_info := pareseScheduleTR(schedule_trs.Eq(i))
 		schedule.Add(schedule_int_info, schedule_string_info)
 		// end insert schedule
 
 		//parse pan data
-		res := ParsePanByScheduleFenxiId(schedule_fenxi_id, date, schedule_string_info)
+		res := ParsePanByScheduleFenxiId(schedule_int_info["schedule_fenxi_id"], date, schedule_string_info)
 		if res == false {
 			continue
 		}
 		//计算预测比率
 		calcScheduleResult(schedule_int_info, schedule_string_info)
-//		return 
+		//		return
+		
 	}
 }
 
@@ -78,12 +79,7 @@ func ParsePanByScheduleFenxiId(schedule_fenxi_id int, date string, schedule_stri
 	pan_url := myinit.PanUrl
 	schedule_pan_url := strings.Replace(pan_url, "TTT", strconv.Itoa(schedule_fenxi_id), -1)
 	res = ParsePanUrl(schedule_pan_url, schedule_fenxi_id, schedule_string_info, date)
-	//		fmt.Println("schedule_pan_url:",schedule_pan_url)
-	//		fmt.Println("---------")
-	//		fmt.Println(schedule_string_info["schedule_date"])
-	//		fmt.Println(schedule_string_info["schedule_no"])
-	//		fmt.Println("---------")
-//	fmt.Println("parse:", res)
+
 	return res
 }
 
@@ -105,10 +101,10 @@ func getPredictResMap(predict_type int, schedule_string_info map[string]string) 
 			if value == "" {
 				value = "空"
 			}
-//			fmt.Println("colName")
-//			fmt.Println(colName)
-//			fmt.Println("value")
-//			fmt.Println(value)
+			//			fmt.Println("colName")
+			//			fmt.Println(colName)
+			//			fmt.Println("value")
+			//			fmt.Println(value)
 			if predict_type == 1 {
 				if colName == "predict1_result" {
 					predict_map_key = value

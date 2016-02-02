@@ -1,7 +1,7 @@
 package panmap
 
 import (
-	"500kan/util/myinit"
+	"new/util/myinit"
 	"fmt"
 )
 

@@ -136,7 +136,7 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 				cmt = "主队水位	＞0.875	平或客队胜	对应结果：	1/0"
 			}
 
-			if checkPanAndWaterNotChange(schedule_fenxi_id,company_id,open_pan)==true {
+			if checkPanAndAllWaterNotChange(schedule_fenxi_id,company_id,open_pan)==true {
 				if open_pan_home_water <= 0.875 {
 					ret = "1/0"
 					cmt = "盘口、水位一直不变		初盘水位	主队水位	≤0.875	平或客队胜	对应结果：	1/0"
@@ -216,7 +216,7 @@ func AnalysePanResult1(pan_int_info map[string]int, pan_float_info map[string]fl
 		//	case -1.25:
 		//	case -1.5:
 		flag := false
-		if(checkPanNotChange(schedule_fenxi_id,company_id,open_pan)==true && checkWaterNotChange(schedule_fenxi_id,company_id)==false ){
+		if(checkPanNotLower(schedule_fenxi_id,company_id,open_pan)==true && checkWaterNotChange(schedule_fenxi_id,company_id)==false ){
 			if open_pan_home_water > 0.875 {
 				ret = "3"
 				cmt = "主队水位	＞0.875	主队胜	对应结果：	3"	

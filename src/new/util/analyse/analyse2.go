@@ -3,7 +3,7 @@ package analyse
 import (
 //	"fmt"
 
-	"500kan/util/myinit"
+	"new/util/myinit"
 
 	_ "github.com/go-sql-driver/mysql"
 )
