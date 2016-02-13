@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
-	"new/util/common"
-	"new/util/myinit"
-	"new/util/schedule"
+	"500kan/util/common"
+	"500kan/util/myinit"
+	"500kan/util/schedule"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"
@@ -25,14 +24,14 @@ func getBetUrl(date string) (bet_url string) {
 	return bet_url
 }
 
-func pareseScheduleTR(schedule_tr goquery.Nodes) (schedule_int_info map[string]int, schedule_string_info map[string]string) {
+func pareseScheduleTR(schedule_tr goquery.Nodes,date string) (schedule_int_info map[string]int, schedule_string_info map[string]string) {
 	schedule_int_info = make(map[string]int)
 	schedule_string_info = make(map[string]string)
 	schedule_fenxi_id, _ := strconv.Atoi(schedule_tr.Attr("fid"))
 	schedule_int_info["schedule_fenxi_id"] = int(schedule_fenxi_id)
 	schedule_string_info["schedule_home"] = common.ConvToGB(schedule_tr.Attr("homesxname"))
 	schedule_string_info["schedule_guest"] = common.ConvToGB(schedule_tr.Attr("awaysxname"))
-	schedule_string_info["schedule_date"] = schedule_tr.Attr("pdate")
+	schedule_string_info["schedule_date"] = date
 	schedule_string_info["schedule_league"] = common.ConvToGB(schedule_tr.Attr("lg"))
 	schedule_string_info["schedule_week_day"] = common.ConvToGB(schedule_tr.Attr("gdate"))
 	schedule_string_info["schedule_no"] = schedule_tr.Attr("pname")
@@ -53,26 +52,20 @@ func ParseBetUrl(date string, history bool) {
 			continue
 		}
 
-		today := common.GetToday()
-		schedule_is_today := today == schedule_trs.Eq(i).Attr("pdate")
-		//		fmt.Println("schedule_is_today:===",schedule_is_today)
-		if schedule_is_today == false && history == false {
-			//			continue
-		}
-
-		schedule_int_info, schedule_string_info := pareseScheduleTR(schedule_trs.Eq(i))
-		schedule.Add(schedule_int_info, schedule_string_info)
-		// end insert schedule
-
+		schedule_int_info, schedule_string_info := pareseScheduleTR(schedule_trs.Eq(i),date)
+if(schedule_int_info["schedule_fenxi_id"]!=556793){
+	continue
+}
 		//parse pan data
 		res := ParsePanByScheduleFenxiId(schedule_int_info["schedule_fenxi_id"], date, schedule_string_info)
 		if res == false {
 			continue
 		}
+		schedule.Add(schedule_int_info, schedule_string_info)
 		//计算预测比率
 		calcScheduleResult(schedule_int_info, schedule_string_info)
-		//		return
-		time.Sleep(300 * time.Second)
+//				return
+		
 	}
 }
 

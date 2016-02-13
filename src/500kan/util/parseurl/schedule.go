@@ -49,7 +49,7 @@ func ParseBetUrl(date string, history bool) {
 	for i, _ := range schedule_trs {
 		is_end := schedule_trs.Eq(i).Attr("isend")
 		if is_end == "1" && history == false {
-			continue
+//			continue
 		}
 
 		today := common.GetToday()
@@ -70,7 +70,7 @@ func ParseBetUrl(date string, history bool) {
 		}
 		//计算预测比率
 		calcScheduleResult(schedule_int_info, schedule_string_info)
-		//		return
+//				return
 		
 	}
 }

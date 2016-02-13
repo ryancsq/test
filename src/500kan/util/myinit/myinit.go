@@ -286,7 +286,8 @@ func GetOddsFromAjax(schedule_fenxi_id int, company_id string)(body string) {
 	request.Header.Set("Connection", "Keep-Alive")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
-
+	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36")
+	request.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
 	response, _ := client.Do(request)
 	if response.StatusCode == 200 {
 //		fmt.Println(response.Header.Get("Content-Encoding"))
@@ -327,7 +328,9 @@ func GetOddItemFromAjax(idx int,schedule_fenxi_id int)(body string) {
 	request.Header.Set("Connection", "Keep-Alive")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
-
+	request.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36")
+	request.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
+	
 	response, _ := client.Do(request)
 	if response.StatusCode == 200 {
 		fmt.Println(response.Header.Get("Content-Encoding"))

@@ -45,7 +45,7 @@ func runParseUrl() {
 	t1 := time.Unix(one_ago_unix, 0)
 	parseurl.ParseResultUrl(t1.Format("2006-01-02"), false)
 
-	moveToBackup()
+	//moveToBackup()
 
 	time.Sleep(30 * time.Second)
 	runParseUrl()

@@ -19,7 +19,7 @@ import (
 
 func ParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_string_info map[string]string, date string) (res bool) {
 	useable := checkPanUseable(schedule_pan_url, schedule_fenxi_id, schedule_string_info, date)
-	//	fmt.Println("userabel", useable)
+	fmt.Println("userabel", useable)
 	if useable == false {
 		return false
 	}
@@ -60,6 +60,7 @@ func checkPanTr(tr_item goquery.Nodes, schedule_fenxi_id int) (is_useable bool) 
 
 	pan_float_info["real_home_water"] = float32(home_real_water_32)
 	pan_float_info["real_guest_water"] = float32(guest_real_water_32)
+	fmt.Println("check tr:",schedule_fenxi_id,pan_float_info["open_pan"],pan_float_info["real_pan"])
 	if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
 		asiapan.ClearShouPanByScheduleFenxiId(schedule_fenxi_id)
 		asiapanbackup.ClearShouPanByScheduleFenxiId(schedule_fenxi_id)
@@ -122,7 +123,7 @@ func checkPanUseableFromAjax(idx int, schedule_fenxi_id int) (res bool) {
 	return true
 }
 
-func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) (parse_res bool) {
+func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string,is_ajax bool) (parse_res bool) {
 	td_of_company := tr_item.Find("td").Eq(1)
 	company_id := tr_item.Attr("id")
 	pan_string_info["company_id"] = company_id
@@ -178,7 +179,15 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, pan_int_info map
 	pan_string_info["pan_change_time"] = strings.TrimSpace(td_of_pan_time.Eq(0).Text())
 
 	td_item_of_real_pan := tds_of_realtime_pan_table.Eq(1)
+	
 	home_pan_change_type := common.ConvToGB(td_item_of_real_pan.Find("font").Text())
+	if(is_ajax==true){
+		home_pan_change_type = td_item_of_real_pan.Find("font").Text()
+	}
+		fmt.Println("home_pan_desc company:", company_id, pan_string_info["company_name"])
+
+	fmt.Println("home_pan_desc font:", td_item_of_real_pan.Find("font").Text(),common.ConvToGB(td_item_of_real_pan.Find("font").Text()))
+		fmt.Println("home_pan_desc before trim:", home_pan_change_type)
 	home_pan_change_type = strings.TrimSpace(home_pan_change_type)
 	fmt.Println("home_pan_desc:", home_pan_change_type)
 
@@ -220,7 +229,7 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, pan_int_info map
 
 	if has == true {
 		fmt.Println("go has:is:", pan_string_info["pan_change_time"])
-		return false
+		return true
 	}
 
 	if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
@@ -297,7 +306,7 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			continue
 		}
 
-		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info)
+		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info,false)
 		if parse_res == false {
 			return false
 		}
@@ -375,7 +384,7 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 			continue
 		}
 
-		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info)
+		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info,true)
 		if parse_res == false {
 			return false
 		}

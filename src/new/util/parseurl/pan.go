@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"new/util/analyse"
-	"new/util/asiapan"
-	"new/util/asiapanbackup"
-//	"new/util/asiapanlog"
-	"new/util/common"
-	"new/util/myinit"
-	"new/util/schedule"
+	"500kan/util/analyse"
+	"500kan/util/asiapan"
+	"500kan/util/asiapanbackup"
+//	"500kan/util/asiapanlog"
+	"500kan/util/common"
+	"500kan/util/myinit"
+	"500kan/util/schedule"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"
@@ -75,6 +75,10 @@ func checkPanUseable(schedule_pan_url string, schedule_fenxi_id int, schedule_st
 	pan_html_obj, _ := goquery.ParseUrl(schedule_pan_url)
 
 	odds_tr := pan_html_obj.Find(".table_cont table tbody tr")
+	
+	if(odds_tr.Length()==0){
+		return false
+	}
 	for i := 0; i < odds_tr.Length(); i++ {
 		tr_item := odds_tr.Eq(i)
 		td_of_company := tr_item.Find("td").Eq(1)
@@ -122,10 +126,7 @@ func checkPanUseableFromAjax(idx int, schedule_fenxi_id int) (res bool) {
 	return true
 }
 
-func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, is_ajax bool,pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string) (parse_res bool) {
-	if(is_ajax==true){
-		fmt.Println("is ajx=====")
-	}
+func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, pan_int_info map[string]int, pan_float_info map[string]float32, pan_string_info map[string]string,is_ajax bool) (parse_res bool) {
 	td_of_company := tr_item.Find("td").Eq(1)
 	company_id := tr_item.Attr("id")
 	pan_string_info["company_id"] = company_id
@@ -181,7 +182,15 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, is_ajax bool,pan
 	pan_string_info["pan_change_time"] = strings.TrimSpace(td_of_pan_time.Eq(0).Text())
 
 	td_item_of_real_pan := tds_of_realtime_pan_table.Eq(1)
+	
 	home_pan_change_type := common.ConvToGB(td_item_of_real_pan.Find("font").Text())
+	if(is_ajax==true){
+		home_pan_change_type = td_item_of_real_pan.Find("font").Text()
+	}
+		fmt.Println("home_pan_desc company:", company_id, pan_string_info["company_name"])
+
+	fmt.Println("home_pan_desc font:", td_item_of_real_pan.Find("font").Text(),common.ConvToGB(td_item_of_real_pan.Find("font").Text()))
+		fmt.Println("home_pan_desc before trim:", home_pan_change_type)
 	home_pan_change_type = strings.TrimSpace(home_pan_change_type)
 	fmt.Println("home_pan_desc:", home_pan_change_type)
 
@@ -223,7 +232,7 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, is_ajax bool,pan
 
 	if has == true {
 		fmt.Println("go has:is:", pan_string_info["pan_change_time"])
-		return false
+		return true
 	}
 
 	if pan_float_info["open_pan"] > 0 || pan_float_info["real_pan"] > 0 {
@@ -236,7 +245,10 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, is_ajax bool,pan
 		return false
 	}
 	
+	//
+	common.SleepMy()
 	ParsePanChangeUrl(schedule_fenxi_id,company_id,pan_int_info,pan_float_info,pan_string_info)
+	
 
 	predict1_result, predict1_cmt := analyse.AnalysePanResult1(pan_int_info, pan_float_info, pan_string_info)
 	pan_string_info["predict1_result"] = predict1_result
@@ -245,27 +257,27 @@ func doParsePanTr(tr_item goquery.Nodes, schedule_fenxi_id int, is_ajax bool,pan
 	pan_string_info["predict2_result"] = predict2_result
 	pan_string_info["predict2_cmt"] = predict2_cmt
 
-//	 fmt.Println("company:" + company)
-//	 fmt.Println("home_pan_change_type:" + home_pan_change_type)
-//	 fmt.Println("is big company:" + is_big_company)
-//	 fmt.Println("change_time:" + change_time)
-//	 fmt.Println("open_time:" + open_time)
-//	 fmt.Println("flag:" + home_water_change_type + " " + home_water_up_down_flag)
-//			fmt.Println("home_real_water:", pan_float_info["real_home_water"])
-//			fmt.Println(home_real_water_32)
-//			fmt.Println(float32(home_real_water_32))
-//			fmt.Println("home_real_water water sting:" + home_real_water_str + home_real_water_string)
-//			fmt.Println("guest_real_water:", pan_float_info["real_guest_water"])
-//			fmt.Println("guest_real_water water sting:" + guest_real_water_str + guest_real_water_string)
-//			fmt.Println("pan:", pan_float_info["real_pan"], " ", real_pan_desc)
+	// fmt.Println("company:" + company)
+	// fmt.Println("home_pan_change_type:" + home_pan_change_type)
+	// fmt.Println("is big company:" + is_big_company)
+	// fmt.Println("change_time:" + change_time)
+	// fmt.Println("open_time:" + open_time)
+	// fmt.Println("flag:" + home_water_change_type + " " + home_water_up_down_flag)
+	//		fmt.Println("home_real_water:", pan_float_info["real_home_water"])
+	//		fmt.Println(home_real_water_32)
+	//		fmt.Println(float32(home_real_water_32))
+	//		fmt.Println("home_real_water water sting:" + home_real_water_str + home_real_water_string)
+	//		fmt.Println("guest_real_water:", pan_float_info["real_guest_water"])
+	//		fmt.Println("guest_real_water water sting:" + guest_real_water_str + guest_real_water_string)
+	//		fmt.Println("pan:", pan_float_info["real_pan"], " ", real_pan_desc)
 
-//	 fmt.Println("open_home_water water:", open_home_water)
-//	 fmt.Println("open_guest_water water:", open_guest_water)
-//	 fmt.Println("open pan:", open_pan, " ", open_pan_desc)
+	// fmt.Println("open_home_water water:", open_home_water)
+	// fmt.Println("open_guest_water water:", open_guest_water)
+	// fmt.Println("open pan:", open_pan, " ", open_pan_desc)
 
 	addAsiaPan(schedule_fenxi_id, company_id, pan_int_info, pan_float_info, pan_string_info)
 	//delete water > 2 and < 1.75
-	checkWaterSum(schedule_fenxi_id, company_id, pan_float_info)
+//	checkWaterSum(schedule_fenxi_id, company_id, pan_float_info)
 	return true
 }
 
@@ -300,7 +312,7 @@ func doParsePanUrl(schedule_pan_url string, schedule_fenxi_id int, schedule_stri
 			continue
 		}
 
-		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, false,pan_int_info, pan_float_info, pan_string_info)
+		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info,false)
 		if parse_res == false {
 			return false
 		}
@@ -378,7 +390,7 @@ func ParsePanUrlFromAjax(idx int, schedule_fenxi_id int, pan_html_string_info ma
 			continue
 		}
 
-		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, true,pan_int_info, pan_float_info, pan_string_info)
+		parse_res := doParsePanTr(tr_item, schedule_fenxi_id, pan_int_info, pan_float_info, pan_string_info,true)
 		if parse_res == false {
 			return false
 		}

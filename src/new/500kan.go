@@ -22,12 +22,17 @@ func main() {
 }
 func runParseUrl() {
 	myinit.Myinit()
-	//	date := "2016-01-01"
-	//	now := time.Now()
-	//	date := now.Format("2006-01-02")
-	date := "2016-02-01"
-	parseurl.ParseBetUrl(date, true)
-	parseurl.ParseResultUrl(date, true)
+
+	for i:=30;i<31;i++ {
+		a:=86400*int64(i)
+		one_ago_unix := time.Now().Unix() - a
+		t1 := time.Unix(one_ago_unix, 0)
+		date := t1.Format("2006-01-02")
+		fmt.Println(date)
+		date = "2016-01-14"
+		parseurl.ParseBetUrl(date, true)
+		parseurl.ParseResultUrl(date, true)
+	}	
 
 }
 

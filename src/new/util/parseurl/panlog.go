@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"new/util/asiapanlog"
-	"new/util/myinit"
-	"new/util/panmap"
+	"500kan/util/asiapanlog"
+	"500kan/util/myinit"
+	"500kan/util/panmap"
 
 	"github.com/bitly/go-simplejson"
 	_ "github.com/go-sql-driver/mysql"
@@ -42,7 +42,12 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_in
 		panic(err.Error())
 	}
 	tr_items, _ := body_json.Array()
-	for _, tr_string := range tr_items {
+	fmt.Println(schedule_fenxi_id, company_id,len(tr_items))
+	tr_item_length := len(tr_items)
+	for i, tr_string := range tr_items {
+		if(i==tr_item_length-1){
+			continue
+		}
 		table_string := "<table>" + tr_string.(string) + "</table>"
 		html_obj, _ := goquery.ParseString(table_string)
 		pan_log_item := html_obj.Find("table tbody tr td")
@@ -73,7 +78,7 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_in
 		home_pan_change_type := pan_td.Find("font").Text()
 		home_pan_change_type = strings.TrimSpace(home_pan_change_type)
 		pan_int_info["home_pan_change_type"] = 0
-
+		pan_string_info["home_pan_change_type_desc"] = ""
 		if home_pan_change_type == "升" {
 			pan_int_info["home_pan_change_type"] = 1
 			pan_string_info["home_pan_change_type_desc"] = home_pan_change_type
@@ -87,6 +92,7 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_in
 
 		home_water_up_down_flag := home_td.Attr("class")
 		pan_int_info["home_water_change_type"] = 0
+		pan_string_info["home_water_change_type_desc"] = ""
 		if home_water_up_down_flag == "tips_down" {
 			pan_int_info["home_water_change_type"] = -1            // down
 			pan_string_info["home_water_change_type_desc"] = "水位降" // down
@@ -107,6 +113,7 @@ func ParsePanChangeUrl(schedule_fenxi_id int, company_id string, pan_html_int_in
 			fmt.Println(real_pan_desc, "no exist")
 			return false
 		}
+		
 		pan_float_info["real_pan"] = real_pan_value
 		asiapanlog.Add(pan_int_info, pan_float_info, pan_string_info)
 	}

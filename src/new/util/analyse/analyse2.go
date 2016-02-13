@@ -3,7 +3,7 @@ package analyse
 import (
 //	"fmt"
 
-	"new/util/myinit"
+	"500kan/util/myinit"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -14,8 +14,8 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 	open_pan_home_water := pan_float_info["open_home_water"]
 	open_pan_guest_water := pan_float_info["open_guest_water"]
 	real_pan := pan_float_info["real_pan"]
-	real_pan_home_water := pan_float_info["home_real_water"]
-	real_pan_guest_water := pan_float_info["guest_real_water"]
+	real_pan_home_water := pan_float_info["real_home_water"]
+	real_pan_guest_water := pan_float_info["real_guest_water"]
 
 	home_pan_change_type := pan_int_info["home_water_change_type"]
 	schedule_game_desc := pan_string_info["schedule_game_desc"]

@@ -2,23 +2,22 @@ package parseurl
 
 import (
 	"fmt"
-	"time"
+//	"time"
 	"strings"
 
-	"new/util/asiapan"
-	"new/util/asiapanlog"
-	"new/util/common"
-	"new/util/myinit"
-	"new/util/schedule"
+	"500kan/util/asiapan"
+	"500kan/util/asiapanlog"
+	"500kan/util/common"
+	"500kan/util/myinit"
+	"500kan/util/schedule"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"
 )
 
-func ParseResultUrl(date string, history bool) {
+func ParseResultUrl(date string, history bool)(res bool) {
 	if date == "" {
-		now := time.Now()
-		date = now.Format("2006-01-02")
+		return false
 	}
 	result_url := strings.Replace(myinit.ResultUrl, "DDD", date, -1)
 	fmt.Println(result_url)
@@ -53,7 +52,9 @@ func ParseResultUrl(date string, history bool) {
 		pan_string_info["schedule_rqspf_result"] = schedule_string_info["schedule_rqspf_result"]
 		pan_string_info["schedule_zjq_result"] = schedule_string_info["schedule_zjq_result"]
 		pan_string_info["schedule_bqc_result"] = schedule_string_info["schedule_bqc_result"]
+		
 		has := schedule.CheckExistsByResultNoAndDate(schedule_string_info["schedule_result_no"], date)
+		fmt.Println("has:",has)
 		if has == false {
 			continue
 		}
@@ -62,4 +63,5 @@ func ParseResultUrl(date string, history bool) {
 		asiapanlog.UpdateAsiaPanResult(date, pan_float_info, pan_string_info)
 
 	}
+	return true
 }

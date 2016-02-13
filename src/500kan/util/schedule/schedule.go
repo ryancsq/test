@@ -13,7 +13,6 @@ func ClearScheduleByFenxiId(schedule_fenxi_id int){
 func Add(schedule_int_info map[string]int, schedule_string_info map[string]string) {
 	myinit.Myinit()
 	has := CheckExists(schedule_string_info["schedule_date"], schedule_string_info["schedule_no"])
-
 	if has==true {
 		fmt.Println(schedule_string_info["schedule_home"] + " vs " + schedule_string_info["schedule_guest"] + "已存在！")
 	} else {
@@ -37,6 +36,9 @@ func Add(schedule_int_info map[string]int, schedule_string_info map[string]strin
 func CheckExists(schedule_date string, schedule_no string) (has bool) {
 	exist_schedule := new(myinit.Schedule)
 	has, _ = myinit.Engine.Where("schedule_date=? AND schedule_no=? ", schedule_date, schedule_no).Get(exist_schedule)
+	
+	fmt.Println(schedule_date, schedule_no,has,exist_schedule.ScheduleHome)
+
 	return has
 }
 

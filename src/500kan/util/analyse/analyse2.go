@@ -14,10 +14,10 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 	open_pan_home_water := pan_float_info["open_home_water"]
 	open_pan_guest_water := pan_float_info["open_guest_water"]
 	real_pan := pan_float_info["real_pan"]
-	real_pan_home_water := pan_float_info["home_real_water"]
-	real_pan_guest_water := pan_float_info["guest_real_water"]
+	real_pan_home_water := pan_float_info["real_home_water"]
+	real_pan_guest_water := pan_float_info["real_guest_water"]
 
-	home_pan_change_type := pan_int_info["home_water_change_type"]
+	home_pan_change_type := pan_int_info["home_pan_change_type"]
 	schedule_game_desc := pan_string_info["schedule_game_desc"]
 
 	fid := pan_int_info["schedule_fenxi_id"]
@@ -132,9 +132,10 @@ func AnalysePanResult2(pan_int_info map[string]int, pan_float_info map[string]fl
 		} else if home_pan_change_type == 1 {
 			cmt = "相对主队出现升盘（平半升半球或一球）初盘盘口=-0.25，即时盘口数值＜-0.25"
 			if open_pan_home_water < open_pan_guest_water {
-				if real_pan_home_water > real_pan_guest_water && checkWaterIsDown(fid, cid) == true {
+//				if real_pan_home_water > real_pan_guest_water && checkWaterIsDown(fid, cid) == true {
+				if real_pan_home_water > real_pan_guest_water  {
 					ret = "3"
-					cmt += "主队水位	<客队水位	即时水位＞客队水位并且水位持续下降	主队胜"
+					cmt += "主队水位	<客队水位	即时水位＞客队水位(并且水位持续下降去掉)	主队胜"
 				} else if real_pan_home_water < real_pan_guest_water {
 					ret = "1/0"
 					cmt += "主队水位	<客队水位 	即时水位<客队水位	平或客队胜"
