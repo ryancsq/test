@@ -5,11 +5,11 @@ import (
 //	"time"
 	"strings"
 
-	"500kan/util/asiapan"
-	"500kan/util/asiapanlog"
-	"500kan/util/common"
-	"500kan/util/myinit"
-	"500kan/util/schedule"
+	"new/util/asiapan"
+	"new/util/asiapanlog"
+	"new/util/common"
+	"new/util/myinit"
+	"new/util/schedule"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"

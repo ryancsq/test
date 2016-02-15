@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"500kan/util/common"
-	"500kan/util/myinit"
-	"500kan/util/schedule"
+	"new/util/common"
+	"new/util/myinit"
+	"new/util/schedule"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/opesun/goquery"
@@ -53,9 +53,9 @@ func ParseBetUrl(date string, history bool) {
 		}
 
 		schedule_int_info, schedule_string_info := pareseScheduleTR(schedule_trs.Eq(i),date)
-if(schedule_int_info["schedule_fenxi_id"]!=556793){
-	continue
-}
+//if(schedule_int_info["schedule_fenxi_id"]!=556793){
+//	continue
+//}
 		//parse pan data
 		res := ParsePanByScheduleFenxiId(schedule_int_info["schedule_fenxi_id"], date, schedule_string_info)
 		if res == false {

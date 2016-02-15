@@ -6,11 +6,14 @@ import (
 	"strconv"
 	"time"
 	"unsafe"
+//    "math/rand"
 
 	"github.com/guotie/gogb2312"
 )
 func SleepMy(){
-		time.Sleep(100*time.Microsecond)
+//	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+//	sec := r.Intn(40)	
+	time.Sleep(10 * time.Second)
 }
 
 func GetToday()(today string){
